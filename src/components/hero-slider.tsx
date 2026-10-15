@@ -5,7 +5,17 @@ import Image from "next/image";
 import Link from "next/link";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import { ArrowRight, ChevronLeft, ChevronRight, Zap } from "lucide-react";
+import { motion } from "framer-motion";
+import {
+  ArrowRight,
+  BadgePercent,
+  ChevronLeft,
+  ChevronRight,
+  ShieldCheck,
+  Star,
+  Truck,
+  Zap,
+} from "lucide-react";
 import type { HeroSlideItem, HeroSliderProps } from "@/types/hero";
 
 const ACCENT_OVERLAY: Record<HeroSlideItem["accentColor"], string> = {
@@ -16,6 +26,22 @@ const ACCENT_OVERLAY: Record<HeroSlideItem["accentColor"], string> = {
 };
 
 const AUTOPLAY_DELAY = 5500;
+
+const TRUST_BADGES = [
+  { icon: Truck, label: "Free Shipping" },
+  { icon: ShieldCheck, label: "2 Year Warranty" },
+  { icon: BadgePercent, label: "EMI Available" },
+];
+
+const containerVariants = {
+  hidden: {},
+  active: { transition: { staggerChildren: 0.09, delayChildren: 0.12 } },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 28 },
+  active: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
+};
 
 const DEFAULT_SLIDES: HeroSlideItem[] = [
   {
@@ -88,6 +114,10 @@ function getDiscountPercent(price: string, originalPrice?: string): number | nul
   return Math.round(((o - p) / o) * 100);
 }
 
+function padIndex(index: number) {
+  return String(index + 1).padStart(2, "0");
+}
+
 export default function HeroSlider({ slides = DEFAULT_SLIDES }: HeroSliderProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { loop: true, duration: 30 },
@@ -127,6 +157,8 @@ export default function HeroSlider({ slides = DEFAULT_SLIDES }: HeroSliderProps)
         <div className="flex">
           {slides.map((slide, index) => {
             const discount = getDiscountPercent(slide.price, slide.originalPrice);
+            const isActive = index === selectedIndex;
+
             return (
               <div key={slide.id} className="relative flex-[0_0_100%] min-w-0">
                 <div className="absolute inset-0">
@@ -145,27 +177,40 @@ export default function HeroSlider({ slides = DEFAULT_SLIDES }: HeroSliderProps)
                   />
                 </div>
 
-                <div className="relative mx-auto flex min-h-[560px] max-w-7xl items-center px-4 py-16 sm:min-h-[600px] sm:px-6 lg:min-h-[660px] lg:px-8">
-                  <div className="max-w-2xl space-y-6">
-                    <div className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1.5 text-xs font-medium text-emerald-300 backdrop-blur-sm">
+                <div className="pointer-events-none absolute top-1/3 left-1/4 size-[480px] rounded-full bg-emerald-500/15 blur-[120px]" />
+
+                <div className="relative mx-auto flex min-h-[580px] max-w-7xl items-center px-4 py-16 sm:min-h-[620px] sm:px-6 lg:min-h-[680px] lg:px-8">
+                  <motion.div
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate={isActive ? "active" : "hidden"}
+                    className="max-w-2xl space-y-6"
+                  >
+                    <motion.div
+                      variants={itemVariants}
+                      className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1.5 text-xs font-medium text-emerald-300 backdrop-blur-sm"
+                    >
                       <Zap className="size-3.5" />
                       <span>{slide.tagline}</span>
-                    </div>
+                    </motion.div>
 
-                    <div className="space-y-2">
+                    <motion.div variants={itemVariants} className="space-y-2">
                       <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
                         {slide.title}
                       </h1>
                       <p className="bg-gradient-to-r from-emerald-300 via-emerald-400 to-teal-300 bg-clip-text text-xl font-bold text-transparent sm:text-2xl">
                         {slide.highlightText}
                       </p>
-                    </div>
+                    </motion.div>
 
-                    <p className="max-w-xl text-sm leading-relaxed text-zinc-300 sm:text-base">
+                    <motion.p
+                      variants={itemVariants}
+                      className="max-w-xl text-sm leading-relaxed text-zinc-300 sm:text-base"
+                    >
                       {slide.description}
-                    </p>
+                    </motion.p>
 
-                    <div className="grid max-w-md grid-cols-3 gap-3">
+                    <motion.div variants={itemVariants} className="grid max-w-md grid-cols-3 gap-3">
                       {slide.specs.map((spec) => (
                         <div
                           key={spec.label}
@@ -179,9 +224,12 @@ export default function HeroSlider({ slides = DEFAULT_SLIDES }: HeroSliderProps)
                           </span>
                         </div>
                       ))}
-                    </div>
+                    </motion.div>
 
-                    <div className="flex flex-wrap items-center gap-5">
+                    <motion.div
+                      variants={itemVariants}
+                      className="flex flex-wrap items-center gap-5"
+                    >
                       <div className="flex items-baseline gap-2.5">
                         <span className="text-3xl font-black text-white sm:text-4xl">
                           {slide.price}
@@ -200,18 +248,58 @@ export default function HeroSlider({ slides = DEFAULT_SLIDES }: HeroSliderProps)
 
                       <Link
                         href={slide.ctaLink}
-                        className="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-7 py-3.5 text-sm font-bold text-zinc-950 shadow-lg shadow-emerald-500/25 transition-all hover:bg-emerald-400 hover:shadow-emerald-400/40 active:scale-[0.98]"
+                        className="group inline-flex items-center gap-2 rounded-full bg-emerald-500 px-7 py-3.5 text-sm font-bold text-zinc-950 shadow-lg shadow-emerald-500/25 transition-all hover:bg-emerald-400 hover:shadow-emerald-400/40 active:scale-[0.98]"
                       >
                         <span>{slide.ctaText}</span>
-                        <ArrowRight className="size-4" />
+                        <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
                       </Link>
+                    </motion.div>
+
+                    <motion.div
+                      variants={itemVariants}
+                      className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-white/10 pt-5 text-xs text-zinc-400"
+                    >
+                      {TRUST_BADGES.map(({ icon: Icon, label }) => (
+                        <span key={label} className="flex items-center gap-1.5">
+                          <Icon className="size-3.5 text-emerald-400" />
+                          {label}
+                        </span>
+                      ))}
+                    </motion.div>
+                  </motion.div>
+
+                  <motion.div
+                    animate={{ y: [0, -12, 0] }}
+                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute right-14 top-1/2 hidden -translate-y-1/2 xl:block"
+                  >
+                    <div className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl shadow-2xl">
+                      <div className="flex items-center gap-1 text-emerald-400">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Star key={i} className="size-3.5 fill-current" />
+                        ))}
+                        <span className="ml-1.5 text-sm font-bold text-white">4.9</span>
+                      </div>
+                      <p className="mt-1 text-xs text-zinc-400">2,340 verified reviews</p>
+                      <div className="mt-3 flex items-center gap-2 border-t border-white/10 pt-3">
+                        <span className="relative flex size-2">
+                          <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                          <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
+                        </span>
+                        <span className="text-xs font-semibold text-white">In Stock</span>
+                      </div>
                     </div>
-                  </div>
+                  </motion.div>
                 </div>
               </div>
             );
           })}
         </div>
+      </div>
+
+      <div className="absolute top-8 right-6 z-20 hidden items-baseline gap-1 font-mono text-sm sm:flex lg:right-10">
+        <span className="text-2xl font-bold text-emerald-400">{padIndex(selectedIndex)}</span>
+        <span className="text-zinc-500">/ {String(slides.length).padStart(2, "0")}</span>
       </div>
 
       <button
