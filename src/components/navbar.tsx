@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Megaphone, Menu, Phone, Search, ShoppingBag, User, X } from "lucide-react";
+import { Megaphone, Menu, Phone, Search, ShoppingCart, Truck, User, X } from "lucide-react";
 
 const categories = [
   { name: "Smartphone", href: "/category/smartphone" },
@@ -18,6 +18,7 @@ const categories = [
 ];
 
 const actions = [
+  { name: "Track Order", href: "/track-order", icon: Truck },
   { name: "Offer", href: "/offers", icon: Megaphone },
   { name: "Used Device", href: "/used-device", icon: Phone },
 ];
@@ -49,6 +50,18 @@ export default function Navbar() {
 
           <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
             <Link
+              href="/track-order"
+              className={`hidden rounded-md border px-3 py-1.5 text-xs font-semibold tracking-wide uppercase transition-colors md:flex lg:hidden items-center gap-1.5 ${
+                isActive("/track-order")
+                  ? "border-emerald-400 bg-emerald-500/20 text-emerald-300"
+                  : "border-white/20 text-zinc-200 hover:border-emerald-500/60 hover:text-emerald-400 hover:bg-emerald-500/10"
+              }`}
+            >
+              <Truck className="size-3.5" />
+              <span>Track Order</span>
+            </Link>
+
+            <Link
               href="/pc-builder"
               className={`hidden rounded-md border px-3 py-1.5 text-xs font-semibold tracking-wide uppercase transition-colors lg:block ${
                 isActive("/pc-builder")
@@ -62,9 +75,12 @@ export default function Navbar() {
             <Link
               href="/cart"
               aria-label="Cart"
-              className="flex size-10 items-center justify-center rounded-full border border-white/40 transition-colors hover:bg-white/10"
+              className="relative flex size-10 items-center justify-center rounded-full border border-white/40 text-white transition-colors hover:bg-white/10"
             >
-              <ShoppingBag className="size-5" />
+              <ShoppingCart className="size-5 text-white" />
+              <span className="absolute -top-1 -right-1 flex size-5 items-center justify-center rounded-full bg-[#f97316] text-[11px] font-bold text-white shadow-xs">
+                0
+              </span>
             </Link>
             <Link
               href="/account"
@@ -134,6 +150,20 @@ export default function Navbar() {
             <Search className="pointer-events-none absolute top-1/2 right-3.5 size-5 -translate-y-1/2 text-zinc-400" />
           </div>
           <ul className="space-y-1">
+            <li>
+              <Link
+                href="/track-order"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-2 rounded-md px-2 py-2 text-sm font-semibold transition-colors hover:bg-white/5 ${
+                  isActive("/track-order")
+                    ? "bg-emerald-500/15 text-emerald-400"
+                    : "text-emerald-300 hover:text-emerald-200"
+                }`}
+              >
+                <Truck className="size-4 text-emerald-400" />
+                <span>Track Order</span>
+              </Link>
+            </li>
             {categories.map((category) => (
               <li key={category.href}>
                 <Link
@@ -164,15 +194,30 @@ export default function Navbar() {
             </li>
             <li>
               <Link
-                href="/corporate"
+                href="/offers"
                 onClick={() => setMobileMenuOpen(false)}
-                className={`block rounded-md px-2 py-2 text-sm hover:bg-white/5 ${
-                  isActive("/corporate")
+                className={`flex items-center gap-2 rounded-md px-2 py-2 text-sm hover:bg-white/5 ${
+                  isActive("/offers")
                     ? "bg-emerald-500/15 font-semibold text-emerald-400"
                     : "text-zinc-200"
                 }`}
               >
-                Corporate
+                <Megaphone className="size-4 text-emerald-400" />
+                <span>Offers</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/used-device"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-2 rounded-md px-2 py-2 text-sm hover:bg-white/5 ${
+                  isActive("/used-device")
+                    ? "bg-emerald-500/15 font-semibold text-emerald-400"
+                    : "text-zinc-200"
+                }`}
+              >
+                <Phone className="size-4 text-emerald-400" />
+                <span>Used Device</span>
               </Link>
             </li>
           </ul>

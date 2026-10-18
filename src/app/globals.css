@@ -2,6 +2,8 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+@custom-variant xs (@media (width >= 28rem));
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -137,3 +139,11 @@
     transform: scaleX(1);
   }
 }
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

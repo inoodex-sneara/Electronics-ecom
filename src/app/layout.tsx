@@ -5,6 +5,7 @@ import { SmoothScrollProvider } from "@/providers/SmoothScrollProvider";
 import "./globals.css";
 import Navbar from "@/components/navbar";
 import TopBar from "@/components/top-bar";
+import Footer from "@/components/footer";
 
 const montserrat = Montserrat({
   variable: "--font-sans",
@@ -30,10 +31,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <SmoothScrollProvider>
           <GsapProvider>
-            <TopBar/>
+           
             <Navbar/>
             {children}
-
+            <Footer/>
 
           </GsapProvider>
         </SmoothScrollProvider>

@@ -12,18 +12,10 @@ import {
   ChevronLeft,
   ChevronRight,
   ShieldCheck,
-  Star,
   Truck,
   Zap,
 } from "lucide-react";
 import type { HeroSlideItem, HeroSliderProps } from "@/types/hero";
-
-const ACCENT_OVERLAY: Record<HeroSlideItem["accentColor"], string> = {
-  cyan: "from-emerald-600/25 via-emerald-500/5 to-transparent",
-  indigo: "from-teal-600/25 via-teal-500/5 to-transparent",
-  fuchsia: "from-lime-600/20 via-lime-500/5 to-transparent",
-  emerald: "from-emerald-500/30 via-emerald-400/10 to-transparent",
-};
 
 const AUTOPLAY_DELAY = 5500;
 
@@ -45,6 +37,26 @@ const itemVariants = {
 
 const DEFAULT_SLIDES: HeroSlideItem[] = [
   {
+    id: "slide-0",
+    tagline: "Next-Gen Flagship",
+    title: "iPhone 18 Pro Max",
+    highlightText: "Deep Burgundy Titanium",
+    description:
+      "Aerospace-grade titanium unibody, A20 Pro chip, and a revolutionary camera system built for every light.",
+    price: "$1,199",
+    originalPrice: "$1,299",
+    ctaText: "Order Now",
+    ctaLink: "/category/smartphone",
+    image: "/images/hero/iPhone-18-Pro-dark-cherry-3.webp",
+    accentColor: "rose",
+    theme: "dark",
+    specs: [
+      { label: "Chip", value: "A20 Pro" },
+      { label: "Display", value: "6.9\" Super Retina XDR" },
+      { label: "Camera", value: "48MP Pro Fusion" },
+    ],
+  },
+  {
     id: "slide-1",
     tagline: "Ultra Performance Ecosystem",
     title: "Zenith Pro X1",
@@ -55,8 +67,7 @@ const DEFAULT_SLIDES: HeroSlideItem[] = [
     originalPrice: "$2,199",
     ctaText: "Configure Now",
     ctaLink: "/category/laptops",
-    image:
-      "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=1600&auto=format&fit=crop",
+    image: "/images/hero/laptop.jpg",
     accentColor: "cyan",
     specs: [
       { label: "Processor", value: "24-Core CPU" },
@@ -75,8 +86,7 @@ const DEFAULT_SLIDES: HeroSlideItem[] = [
     originalPrice: "$349",
     ctaText: "Order Audio",
     ctaLink: "/category/audio",
-    image:
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=1600&auto=format&fit=crop",
+    image: "/images/hero/headphones.jpg",
     accentColor: "indigo",
     specs: [
       { label: "Drivers", value: "50mm Beryllium" },
@@ -95,9 +105,8 @@ const DEFAULT_SLIDES: HeroSlideItem[] = [
     originalPrice: "$499",
     ctaText: "Explore Watch",
     ctaLink: "/category/wearables",
-    image:
-      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1600&auto=format&fit=crop",
-    accentColor: "fuchsia",
+    image: "/images/hero/smartwatch.jpg",
+    accentColor: "emerald",
     specs: [
       { label: "Glass", value: "Sapphire Crystal" },
       { label: "Water", value: "10 ATM Rated" },
@@ -114,9 +123,6 @@ function getDiscountPercent(price: string, originalPrice?: string): number | nul
   return Math.round(((o - p) / o) * 100);
 }
 
-function padIndex(index: number) {
-  return String(index + 1).padStart(2, "0");
-}
 
 export default function HeroSlider({ slides = DEFAULT_SLIDES }: HeroSliderProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel(
@@ -152,95 +158,187 @@ export default function HeroSlider({ slides = DEFAULT_SLIDES }: HeroSliderProps)
   const scrollTo = (index: number) => emblaApi?.scrollTo(index);
 
   return (
-    <section className="relative w-full overflow-hidden bg-zinc-950">
+    <section className="relative w-full overflow-hidden bg-white">
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex">
           {slides.map((slide, index) => {
             const discount = getDiscountPercent(slide.price, slide.originalPrice);
             const isActive = index === selectedIndex;
+            const isDark = slide.theme === "dark";
 
             return (
-              <div key={slide.id} className="relative flex-[0_0_100%] min-w-0">
-                <div className="absolute inset-0">
-                  <Image
-                    src={slide.image}
-                    alt={slide.title}
-                    fill
-                    sizes="100vw"
-                    priority={index === 0}
-                    className="object-cover object-center"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/85 to-zinc-950/40" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-zinc-950/70" />
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${ACCENT_OVERLAY[slide.accentColor]}`}
-                  />
+              <div
+                key={slide.id}
+                className={`relative flex-[0_0_100%] min-w-0 ${isDark ? "bg-zinc-950" : "bg-white"}`}
+              >
+                {/* Background on Desktop (lg+) */}
+                <div className="hidden lg:block absolute inset-0">
+                  {isDark ? (
+                    <>
+                      <div className="absolute inset-0 bg-zinc-950" />
+                      <div className="absolute inset-y-0 right-0 w-[55%] flex items-center justify-center p-8">
+                        <Image
+                          src={slide.image}
+                          alt={slide.title}
+                          width={720}
+                          height={720}
+                          priority={index === 0}
+                          sizes="55vw"
+                          className="h-full w-auto max-w-full object-contain drop-shadow-2xl"
+                        />
+                      </div>
+                      <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/95 via-40% to-transparent pointer-events-none" />
+                      <div className="pointer-events-none absolute top-1/3 right-1/4 size-[420px] rounded-full bg-rose-600/15 blur-[130px]" />
+                    </>
+                  ) : (
+                    <>
+                      <Image
+                        src={slide.image}
+                        alt={slide.title}
+                        fill
+                        sizes="100vw"
+                        priority={index === 0}
+                        className="object-cover object-right transition-opacity duration-700"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-r from-white via-white/95 via-42% to-transparent pointer-events-none" />
+                    </>
+                  )}
                 </div>
 
-                <div className="pointer-events-none absolute top-1/3 left-1/4 size-[480px] rounded-full bg-emerald-500/15 blur-[120px]" />
+                {/* Ambient glow decoration (light slides) */}
+                {!isDark && (
+                  <div className="pointer-events-none absolute top-1/4 left-1/4 size-[400px] rounded-full bg-emerald-500/10 blur-[120px]" />
+                )}
 
-                <div className="relative mx-auto flex min-h-[580px] max-w-7xl items-center px-4 py-16 sm:min-h-[620px] sm:px-6 lg:min-h-[680px] lg:px-8">
+                {/* Main Content Container */}
+                <div className="relative mx-auto max-w-7xl px-4 py-8 sm:px-8 sm:py-12 md:px-16 lg:pl-20 lg:pr-12 xl:pl-24 xl:pr-16 min-h-[520px] sm:min-h-[580px] lg:min-h-[640px] flex items-center">
                   <motion.div
                     variants={containerVariants}
                     initial="hidden"
                     animate={isActive ? "active" : "hidden"}
-                    className="max-w-2xl space-y-6"
+                    className="w-full max-w-xl lg:max-w-md xl:max-w-xl space-y-4 sm:space-y-6"
                   >
+                    {/* Tagline Badge */}
                     <motion.div
                       variants={itemVariants}
-                      className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1.5 text-xs font-medium text-emerald-300 backdrop-blur-sm"
+                      className={`inline-flex w-fit items-center gap-2 rounded-full border px-3 py-1 sm:px-3.5 sm:py-1.5 text-xs font-semibold shadow-xs ${
+                        isDark
+                          ? "border-rose-500/30 bg-rose-500/10 text-rose-300"
+                          : "border-emerald-600/20 bg-emerald-50 text-emerald-700"
+                      }`}
                     >
-                      <Zap className="size-3.5" />
+                      <Zap className={`size-3.5 ${isDark ? "text-rose-400" : "text-emerald-600"}`} />
                       <span>{slide.tagline}</span>
                     </motion.div>
 
-                    <motion.div variants={itemVariants} className="space-y-2">
-                      <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
+                    {/* Title & Highlight */}
+                    <motion.div variants={itemVariants} className="space-y-1 sm:space-y-2">
+                      <h1
+                        className={`text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl xl:text-6xl ${
+                          isDark ? "text-white" : "text-zinc-950"
+                        }`}
+                      >
                         {slide.title}
                       </h1>
-                      <p className="bg-gradient-to-r from-emerald-300 via-emerald-400 to-teal-300 bg-clip-text text-xl font-bold text-transparent sm:text-2xl">
+                      <p
+                        className={`bg-gradient-to-r bg-clip-text text-lg font-bold text-transparent sm:text-xl lg:text-2xl ${
+                          isDark
+                            ? "from-rose-400 via-pink-400 to-rose-500"
+                            : "from-emerald-600 via-teal-600 to-emerald-700"
+                        }`}
+                      >
                         {slide.highlightText}
                       </p>
                     </motion.div>
 
+                    {/* Dedicated Product Showcase on Mobile & Tablet (< lg) */}
+                    <motion.div
+                      variants={itemVariants}
+                      className="block lg:hidden my-3 w-full"
+                    >
+                      <div
+                        className={`relative h-52 xs:h-60 sm:h-72 w-full overflow-hidden rounded-2xl border shadow-md ${
+                          isDark
+                            ? "border-white/10 bg-zinc-900"
+                            : "border-zinc-200/80 bg-gradient-to-br from-zinc-100 via-zinc-50 to-white"
+                        }`}
+                      >
+                        <Image
+                          src={slide.image}
+                          alt={slide.title}
+                          fill
+                          priority={index === 0}
+                          sizes="(max-width: 1024px) 100vw, 600px"
+                          className={isDark ? "object-contain p-4" : "object-cover object-[72%_center]"}
+                        />
+                      </div>
+                    </motion.div>
+
+                    {/* Description */}
                     <motion.p
                       variants={itemVariants}
-                      className="max-w-xl text-sm leading-relaxed text-zinc-300 sm:text-base"
+                      className={`text-xs leading-relaxed sm:text-sm lg:text-base ${
+                        isDark ? "text-zinc-400" : "text-zinc-600"
+                      }`}
                     >
                       {slide.description}
                     </motion.p>
 
-                    <motion.div variants={itemVariants} className="grid max-w-md grid-cols-3 gap-3">
+                    {/* Specs Cards */}
+                    <motion.div variants={itemVariants} className="grid grid-cols-3 gap-2 sm:gap-3">
                       {slide.specs.map((spec) => (
                         <div
                           key={spec.label}
-                          className="rounded-xl border border-white/10 bg-white/5 p-2.5 backdrop-blur-md"
+                          className={`rounded-xl border p-2 sm:p-2.5 shadow-xs backdrop-blur-md ${
+                            isDark
+                              ? "border-white/10 bg-white/5"
+                              : "border-zinc-200/80 bg-white/90"
+                          }`}
                         >
-                          <span className="text-[10px] font-medium tracking-wider text-zinc-400 uppercase">
+                          <span
+                            className={`text-[9px] sm:text-[10px] font-semibold tracking-wider uppercase block truncate ${
+                              isDark ? "text-zinc-500" : "text-zinc-500"
+                            }`}
+                          >
                             {spec.label}
                           </span>
-                          <span className="mt-0.5 block truncate text-xs font-semibold text-white sm:text-sm">
+                          <span
+                            className={`mt-0.5 block truncate text-xs sm:text-sm font-bold ${
+                              isDark ? "text-white" : "text-zinc-900"
+                            }`}
+                          >
                             {spec.value}
                           </span>
                         </div>
                       ))}
                     </motion.div>
 
+                    {/* Price and CTA Button */}
                     <motion.div
                       variants={itemVariants}
-                      className="flex flex-wrap items-center gap-5"
+                      className="flex flex-wrap items-center gap-3 sm:gap-5 pt-1"
                     >
-                      <div className="flex items-baseline gap-2.5">
-                        <span className="text-3xl font-black text-white sm:text-4xl">
+                      <div className="flex items-baseline gap-2">
+                        <span
+                          className={`text-2xl sm:text-3xl lg:text-4xl font-black ${
+                            isDark ? "text-white" : "text-zinc-950"
+                          }`}
+                        >
                           {slide.price}
                         </span>
                         {slide.originalPrice && (
-                          <span className="text-sm text-zinc-500 line-through">
+                          <span className="text-xs sm:text-sm font-medium text-zinc-400 line-through">
                             {slide.originalPrice}
                           </span>
                         )}
                         {discount !== null && (
-                          <span className="rounded-full border border-red-500/30 bg-red-500/15 px-2.5 py-0.5 text-xs font-bold text-red-400">
+                          <span
+                            className={`rounded-full border px-2 py-0.5 text-[10px] sm:text-xs font-bold ${
+                              isDark
+                                ? "border-rose-500/30 bg-rose-500/10 text-rose-400"
+                                : "border-rose-500/20 bg-rose-50 text-rose-600"
+                            }`}
+                          >
                             SAVE {discount}%
                           </span>
                         )}
@@ -248,47 +346,33 @@ export default function HeroSlider({ slides = DEFAULT_SLIDES }: HeroSliderProps)
 
                       <Link
                         href={slide.ctaLink}
-                        className="group inline-flex items-center gap-2 rounded-full bg-emerald-500 px-7 py-3.5 text-sm font-bold text-zinc-950 shadow-lg shadow-emerald-500/25 transition-all hover:bg-emerald-400 hover:shadow-emerald-400/40 active:scale-[0.98]"
+                        className={`group inline-flex items-center gap-2 rounded-full px-5 py-2.5 sm:px-7 sm:py-3.5 text-xs sm:text-sm font-bold text-white shadow-lg transition-all active:scale-[0.98] ${
+                          isDark
+                            ? "bg-rose-600 shadow-rose-600/25 hover:bg-rose-500 hover:shadow-rose-500/35"
+                            : "bg-emerald-600 shadow-emerald-600/20 hover:bg-emerald-500 hover:shadow-emerald-500/30"
+                        }`}
                       >
                         <span>{slide.ctaText}</span>
                         <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
                       </Link>
                     </motion.div>
 
+                    {/* Trust Badges */}
                     <motion.div
                       variants={itemVariants}
-                      className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-white/10 pt-5 text-xs text-zinc-400"
+                      className={`flex flex-wrap items-center gap-x-4 gap-y-2 border-t pt-4 text-xs font-medium ${
+                        isDark ? "border-white/10 text-zinc-400" : "border-zinc-200/80 text-zinc-600"
+                      }`}
                     >
                       {TRUST_BADGES.map(({ icon: Icon, label }) => (
-                        <span key={label} className="flex items-center gap-1.5">
-                          <Icon className="size-3.5 text-emerald-400" />
+                        <span key={label} className="flex items-center gap-1.5 text-[11px] sm:text-xs">
+                          <Icon
+                            className={`size-3.5 ${isDark ? "text-rose-400" : "text-emerald-600"}`}
+                          />
                           {label}
                         </span>
                       ))}
                     </motion.div>
-                  </motion.div>
-
-                  <motion.div
-                    animate={{ y: [0, -12, 0] }}
-                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute right-14 top-1/2 hidden -translate-y-1/2 xl:block"
-                  >
-                    <div className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl shadow-2xl">
-                      <div className="flex items-center gap-1 text-emerald-400">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star key={i} className="size-3.5 fill-current" />
-                        ))}
-                        <span className="ml-1.5 text-sm font-bold text-white">4.9</span>
-                      </div>
-                      <p className="mt-1 text-xs text-zinc-400">2,340 verified reviews</p>
-                      <div className="mt-3 flex items-center gap-2 border-t border-white/10 pt-3">
-                        <span className="relative flex size-2">
-                          <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                          <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
-                        </span>
-                        <span className="text-xs font-semibold text-white">In Stock</span>
-                      </div>
-                    </div>
                   </motion.div>
                 </div>
               </div>
@@ -297,15 +381,11 @@ export default function HeroSlider({ slides = DEFAULT_SLIDES }: HeroSliderProps)
         </div>
       </div>
 
-      <div className="absolute top-8 right-6 z-20 hidden items-baseline gap-1 font-mono text-sm sm:flex lg:right-10">
-        <span className="text-2xl font-bold text-emerald-400">{padIndex(selectedIndex)}</span>
-        <span className="text-zinc-500">/ {String(slides.length).padStart(2, "0")}</span>
-      </div>
-
+      {/* Navigation Arrows: Hidden on small mobile screens to prevent blocking content, visible on md+ */}
       <button
         onClick={scrollPrev}
         aria-label="Previous Slide"
-        className="absolute top-1/2 left-4 z-20 flex size-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-md transition-all hover:bg-emerald-500 hover:text-zinc-950 sm:left-6"
+        className="hidden md:flex absolute top-1/2 left-3 lg:left-6 z-20 size-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-zinc-200/80 bg-white/90 text-zinc-800 shadow-md backdrop-blur-md transition-all hover:bg-emerald-600 hover:text-white hover:border-emerald-600 hover:scale-105 active:scale-95"
       >
         <ChevronLeft className="size-5" />
       </button>
@@ -313,7 +393,7 @@ export default function HeroSlider({ slides = DEFAULT_SLIDES }: HeroSliderProps)
       <button
         onClick={scrollNext}
         aria-label="Next Slide"
-        className="absolute top-1/2 right-4 z-20 flex size-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-md transition-all hover:bg-emerald-500 hover:text-zinc-950 sm:right-6"
+        className="hidden md:flex absolute top-1/2 right-3 lg:right-6 z-20 size-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-zinc-200/80 bg-white/90 text-zinc-800 shadow-md backdrop-blur-md transition-all hover:bg-emerald-600 hover:text-white hover:border-emerald-600 hover:scale-105 active:scale-95"
       >
         <ChevronRight className="size-5" />
       </button>
@@ -324,14 +404,14 @@ export default function HeroSlider({ slides = DEFAULT_SLIDES }: HeroSliderProps)
             key={index}
             onClick={() => scrollTo(index)}
             aria-label={`Go to slide ${index + 1}`}
-            className={`h-1.5 overflow-hidden rounded-full transition-all duration-300 ${
-              selectedIndex === index ? "w-10 bg-white/20" : "w-2 bg-white/30 hover:bg-white/60"
+            className={`h-1.5 cursor-pointer overflow-hidden rounded-full transition-all duration-300 ${
+              selectedIndex === index ? "w-10 bg-zinc-200" : "w-2 bg-zinc-300 hover:bg-zinc-400"
             }`}
           >
             {selectedIndex === index && (
               <span
                 key={`progress-${index}`}
-                className="block size-full origin-left bg-emerald-400"
+                className="block size-full origin-left bg-emerald-600"
                 style={{
                   animation: `hero-slide-progress ${AUTOPLAY_DELAY}ms linear forwards`,
                 }}

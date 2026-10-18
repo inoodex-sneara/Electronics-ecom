@@ -1,6 +1,6 @@
 // components/top-bar.tsx
 import Link from "next/link";
-import { Sparkles, Truck, HelpCircle, PhoneCall } from "lucide-react";
+import { Truck, HelpCircle, PhoneCall } from "lucide-react";
 import type { TopBarProps } from "@/types/navigation";
 
 const DEFAULT_ANNOUNCEMENT = {
@@ -26,8 +26,8 @@ export default function TopBar({
         
         {/* অ্যানাউন্সমেন্ট */}
         <div className="flex items-center gap-2">
-          <span className="flex items-center gap-1 text-cyan-400 font-semibold uppercase tracking-wider text-[11px] bg-cyan-950/60 border border-cyan-800/50 px-2 py-0.5 rounded-full">
-            <Sparkles className="w-3 h-3 animate-pulse" /> {announcement.tag}
+          <span className="text-cyan-400 font-semibold uppercase tracking-wider text-[11px] bg-cyan-950/60 border border-cyan-800/50 px-2 py-0.5 rounded-full">
+            {announcement.tag}
           </span>
           <span className="hidden sm:inline text-zinc-300">
             {announcement.message}{" "}

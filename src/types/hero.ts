@@ -16,7 +16,8 @@ export interface HeroSlideItem {
   ctaLink: string;
   image: string;
   specs: SlideSpec[];
-  accentColor: "cyan" | "indigo" | "fuchsia" | "emerald";
+  accentColor: "cyan" | "indigo" | "fuchsia" | "emerald" | "rose";
+  theme?: "light" | "dark";
 }
 
 export interface HeroSliderProps {
