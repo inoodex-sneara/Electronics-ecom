@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   X,
   Star,
@@ -14,8 +15,10 @@ import {
   RotateCcw,
   Plus,
   Minus,
+  Zap,
 } from "lucide-react";
 import { formatBdt, type ProductItem } from "@/data/products";
+import { useCart } from "@/providers/cart-context";
 
 interface QuickViewModalProps {
   product: ProductItem;
@@ -32,6 +35,8 @@ export default function QuickViewModal({
   onAddToCart,
   onToggleWishlist,
 }: QuickViewModalProps) {
+  const router = useRouter();
+  const { addItem } = useCart();
   const [selectedColor, setSelectedColor] = useState(product.colors?.[0]?.name || "");
   const [qty, setQty] = useState(1);
   const [adding, setAdding] = useState(false);
@@ -63,6 +68,24 @@ export default function QuickViewModal({
       setAdding(false);
       onClose();
     }, 900);
+  };
+
+  const handleBuyNow = () => {
+    addItem(
+      {
+        id: product.id,
+        name: product.name,
+        brand: product.brand,
+        price: product.price,
+        originalPrice: product.originalPrice,
+        image: product.image,
+        color: selectedColor || undefined,
+        inStock: product.inStock,
+      },
+      qty
+    );
+    onClose();
+    router.push("/checkout");
   };
 
   return (
@@ -270,7 +293,7 @@ export default function QuickViewModal({
                 <button
                   onClick={handleAdd}
                   disabled={adding}
-                  className={`flex-1 inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-600/25 transition-all active:scale-[0.98] ${
+                  className={`flex-1 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-600/25 transition-all active:scale-[0.98] ${
                     adding
                       ? "bg-emerald-500"
                       : "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500"
@@ -284,16 +307,24 @@ export default function QuickViewModal({
                   ) : (
                     <>
                       <ShoppingCart className="size-4" />
-                      <span>Add to Cart · {formatBdt(product.price * qty)}</span>
+                      <span className="hidden xs:inline">Add to </span>Cart
                     </>
                   )}
                 </button>
-                <Link
-                  href={`/product/${product.id}`}
-                  onClick={onClose}
-                  className="inline-flex items-center justify-center rounded-xl border border-zinc-300 bg-white px-5 py-3 text-sm font-bold text-zinc-800 hover:bg-zinc-950 hover:text-white hover:border-zinc-950 transition-all active:scale-[0.98]"
+                <button
+                  type="button"
+                  onClick={handleBuyNow}
+                  className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-zinc-950 hover:bg-zinc-800 text-white px-4 py-3 text-sm font-bold transition-all active:scale-[0.98] cursor-pointer"
                 >
-                  Full Details
+                  <Zap className="size-4" />
+                  Buy Now
+                </button>
+                <Link
+                  href={`/products/${product.id}`}
+                  onClick={onClose}
+                  className="inline-flex items-center justify-center rounded-xl border border-zinc-300 bg-white px-4 py-3 text-sm font-bold text-zinc-800 hover:bg-zinc-950 hover:text-white hover:border-zinc-950 transition-all active:scale-[0.98]"
+                >
+                  Details
                 </Link>
               </div>
             </div>

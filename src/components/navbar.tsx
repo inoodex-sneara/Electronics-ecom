@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Megaphone, Menu, Phone, Search, ShoppingCart, Truck, User, X } from "lucide-react";
+import { useCart } from "@/providers/cart-context";
 
 const categories = [
   { name: "Smartphone", href: "/category/smartphone" },
@@ -25,6 +26,7 @@ const actions = [
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { count } = useCart();
   const pathname = usePathname();
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
@@ -79,7 +81,7 @@ export default function Navbar() {
             >
               <ShoppingCart className="size-5 text-white" />
               <span className="absolute -top-1 -right-1 flex size-5 items-center justify-center rounded-full bg-[#f97316] text-[11px] font-bold text-white shadow-xs">
-                0
+                {count}
               </span>
             </Link>
             <Link

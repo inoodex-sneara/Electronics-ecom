@@ -13,13 +13,13 @@ export default function ExchangeOfferBanner({
 }: ExchangeOfferBannerProps) {
   return (
     <section
-      aria-label="পুরোনো ফোন বদলে নিন নতুন ফোন - Exchange Offer"
+      aria-label="Trade-in Exchange Offer - Upgrade to New Device"
       className={`w-full py-3 sm:py-6 lg:py-8 bg-white ${className}`}
     >
       <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
         <Link
           href={href}
-          aria-label="পুরোনো ফোন বদলে নিন নতুন ফোন - Exchange Now"
+          aria-label="Trade in your old phone for a new device - Exchange Now"
           className="group relative block w-full overflow-hidden rounded-xl sm:rounded-2xl lg:rounded-3xl bg-amber-400 shadow-xs sm:shadow-sm ring-1 ring-zinc-200/80 transition-all duration-300 ease-out hover:shadow-xl hover:shadow-amber-500/15 hover:ring-zinc-300 hover:-translate-y-0.5 active:scale-[0.99]"
         >
           {/* Subtle sheen highlight on hover */}
@@ -29,7 +29,7 @@ export default function ExchangeOfferBanner({
           <div className="relative w-full aspect-[1500/323] overflow-hidden">
             <Image
               src="/images/Banner/Exchange-Offer-up-1-7872.png"
-              alt="পুরোনো ফোন বদলে নিন নতুন ফোন - Exchange Now"
+              alt="Trade-in Exchange Offer - Exchange your old phone now"
               width={1500}
               height={323}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 95vw, 1280px"

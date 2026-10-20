@@ -13,11 +13,13 @@ import {
 } from "lucide-react";
 import { NEW_PRODUCTS, formatBdt, type ProductItem } from "@/data/products";
 import QuickViewModal from "@/components/quick-view-modal";
+import { useCart } from "@/providers/cart-context";
 
 export default function NewCollection() {
   const [wishlist, setWishlist] = useState<Record<string, boolean>>({});
   const [quickViewProduct, setQuickViewProduct] = useState<ProductItem | null>(null);
   const [addedItem, setAddedItem] = useState<string | null>(null);
+  const { addItem } = useCart();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const filteredProducts = NEW_PRODUCTS.slice(0, 8);
@@ -37,6 +39,15 @@ export default function NewCollection() {
   const handleAddToCart = (e: React.MouseEvent, product: ProductItem) => {
     e.preventDefault();
     e.stopPropagation();
+    addItem({
+      id: product.id,
+      name: product.name,
+      brand: product.brand,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      image: product.image,
+      inStock: product.inStock,
+    });
     setAddedItem(product.id);
     showToast(`Added ${product.name} to cart`);
     setTimeout(() => {
@@ -45,6 +56,18 @@ export default function NewCollection() {
   };
 
   const addToCartFromModal = (product: ProductItem, qty: number) => {
+    addItem(
+      {
+        id: product.id,
+        name: product.name,
+        brand: product.brand,
+        price: product.price,
+        originalPrice: product.originalPrice,
+        image: product.image,
+        inStock: product.inStock,
+      },
+      qty
+    );
     setAddedItem(product.id);
     showToast(`Added ${qty}× ${product.name} to cart`);
     setTimeout(() => {
@@ -151,7 +174,10 @@ export default function NewCollection() {
                 className="group relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-zinc-200/80 bg-white shadow-xs transition-all duration-300 hover:shadow-xl hover:shadow-zinc-900/10 hover:-translate-y-1"
               >
                 {/* Product Image - Full Width of Card */}
-                <div className="relative w-full aspect-[4/3] sm:aspect-square overflow-hidden bg-zinc-100">
+                <Link
+                  href={`/products/${product.id}`}
+                  className="relative w-full aspect-[4/3] sm:aspect-square overflow-hidden bg-zinc-100 block"
+                >
                   <span
                     className={`absolute top-2.5 left-2.5 z-10 inline-flex items-center px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold tracking-wide uppercase shadow-xs ${getTagBadgeClass(
                       product.tagColor
@@ -198,12 +224,12 @@ export default function NewCollection() {
                       <span>Quick View</span>
                     </button>
                   </div>
-                </div>
+                </Link>
 
                 {/* Content */}
                 <div className="flex flex-1 flex-col p-3 sm:p-4">
                   <h3 className="text-xs sm:text-sm lg:text-base font-semibold text-zinc-900 group-hover:text-emerald-700 transition-colors leading-snug line-clamp-2 min-h-9">
-                    <Link href={`/product/${product.id}`}>{product.name}</Link>
+                    <Link href={`/products/${product.id}`}>{product.name}</Link>
                   </h3>
 
                   <div className="mt-auto pt-3">
