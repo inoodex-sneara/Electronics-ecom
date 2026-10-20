@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Star, Zap, Search, SlidersHorizontal, X, Check, Percent, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, Zap, Search, SlidersHorizontal, X, Percent, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatBdt, type ProductItem } from "@/data/products";
 
 type SortOption = "featured" | "price-asc" | "price-desc" | "rating";

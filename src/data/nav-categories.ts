@@ -96,5 +96,13 @@ export function getCategoryProducts(slug: string): ProductItem[] {
   );
 
   const list = [...navProducts, ...matched];
-  return list.length > 0 ? list : navProducts;
+  const seen = new Set(list.map((p) => p.id));
+
+  const MIN_PER_PAGE = 20;
+  if (list.length < MIN_PER_PAGE) {
+    const filler = ALL_PRODUCTS.filter((p) => !seen.has(p.id));
+    list.push(...filler.slice(0, MIN_PER_PAGE - list.length));
+  }
+
+  return list;
 }

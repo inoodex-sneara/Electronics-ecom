@@ -22,7 +22,7 @@ const categories = NAV_CATEGORIES.map((c) => ({ name: c.name, href: c.href }));
 
 const actions = [
   { name: "Track Order", href: "/track-order", icon: Truck },
-  { name: "Offer", href: "/offers", icon: Megaphone },
+  { name: "Offer", href: "/offers/flash-sale", icon: Megaphone },
 ];
 
 export default function Navbar() {
@@ -82,7 +82,7 @@ export default function Navbar() {
 
         <nav className="hidden border-t border-emerald-500/10 lg:block">
           <div className="flex h-11 items-center gap-4 xl:gap-6">
-            <ul className="flex min-w-0 flex-1 items-center gap-3 whitespace-nowrap text-[13px] xl:gap-5 xl:text-sm">
+            <ul className="flex min-w-0 mt-6 flex-1 items-center gap-3 whitespace-nowrap text-[13px] xl:gap-5 xl:text-sm">
               {NAV_CATEGORIES.map((category, index) => {
                 const isOpen = openMenu === category.slug;
                 return (
@@ -208,30 +208,72 @@ export default function Navbar() {
                 <span>Track Order</span>
               </Link>
             </li>
-            {categories.map((category) => (
-              <li key={category.href}>
-                <Link
-                  href={category.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`block rounded-md px-2 py-2 text-sm transition-colors hover:bg-white/5 ${
-                    isActive(category.href)
-                      ? "bg-emerald-500/15 font-semibold text-emerald-400"
-                      : "text-zinc-200 hover:text-white"
-                  }`}
-                >
-                  {category.name}
-                </Link>
-              </li>
-            ))}
-            <li>
-          
-            </li>
+            {NAV_CATEGORIES.map((category) => {
+              const expanded = mobileCategory === category.slug;
+              return (
+                <li key={category.slug}>
+                  <button
+                    type="button"
+                    onClick={() => setMobileCategory(expanded ? null : category.slug)}
+                    aria-expanded={expanded}
+                    className={`flex w-full items-center justify-between rounded-md px-2 py-2 text-sm transition-colors hover:bg-white/5 ${
+                      isActive(category.href)
+                        ? "bg-emerald-500/15 font-semibold text-emerald-400"
+                        : "text-zinc-200 hover:text-white"
+                    }`}
+                  >
+                    <span>{category.name}</span>
+                    <ChevronDown
+                      className={`size-4 text-emerald-400 transition-transform duration-200 ${
+                        expanded ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+
+                  {expanded && (
+                    <div className="mt-1 mb-2 ml-2 pl-2 border-l border-emerald-500/25 space-y-1">
+                      <Link
+                        href={category.href}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="block rounded-md bg-emerald-500/15 px-2 py-1.5 text-xs font-bold text-emerald-400"
+                      >
+                        View All {category.name} →
+                      </Link>
+                      {getNavProducts(category.slug).map((p) => (
+                        <Link
+                          key={p.id}
+                          href={`/products/${p.id}`}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="flex items-center gap-2.5 rounded-md px-2 py-1.5 hover:bg-white/5 transition-colors"
+                        >
+                          <span className="relative size-8 shrink-0 overflow-hidden rounded bg-white">
+                            <Image
+                              src={p.image}
+                              alt=""
+                              fill
+                              sizes="32px"
+                              className="object-contain p-0.5"
+                            />
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-xs text-zinc-200">{p.name}</span>
+                            <span className="block text-xs font-bold text-emerald-400">
+                              {formatBdt(p.price)}
+                            </span>
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </li>
+              );
+            })}
             <li>
               <Link
-                href="/offers"
+                href="/offers/flash-sale"
                 onClick={() => setMobileMenuOpen(false)}
                 className={`flex items-center gap-2 rounded-md px-2 py-2 text-sm hover:bg-white/5 ${
-                  isActive("/offers")
+                  isActive("/offers/flash-sale")
                     ? "bg-emerald-500/15 font-semibold text-emerald-400"
                     : "text-zinc-200"
                 }`}
@@ -239,9 +281,6 @@ export default function Navbar() {
                 <Megaphone className="size-4 text-emerald-400" />
                 <span>Offers</span>
               </Link>
-            </li>
-            <li>
-              
             </li>
           </ul>
         </div>
