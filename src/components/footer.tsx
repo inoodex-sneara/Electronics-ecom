@@ -44,6 +44,22 @@ function LinkedinIcon({ className }: { className?: string }) {
   );
 }
 
+function MessengerIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+      <path
+        fill="#fff"
+        d="M12 2C6.36 2 2 6.13 2 11.7c0 2.91 1.19 5.44 3.14 7.19.16.14.26.35.27.57l.05 1.78c.02.57.6.94 1.12.71l1.99-.88c.17-.07.36-.09.53-.04.91.25 1.88.38 2.9.38 5.64 0 10-4.13 10-9.7S17.64 2 12 2z"
+        opacity="0.25"
+      />
+      <path
+        fill="#fff"
+        d="M6.85 14.5l3.6-5.72c.57-.9 1.83-1.12 2.68-.48l2.84 2.14c.25.19.6.19.85 0l2.14-1.62c.47-.36 1.1.14.87.7l-3.6 5.72c-.57.9-1.83 1.12-2.68.48l-2.84-2.14a.72.72 0 0 0-.85 0l-2.14 1.62c-.47.36-1.1-.14-.87-.7z"
+      />
+    </svg>
+  );
+}
+
 function YoutubeIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
@@ -342,19 +358,18 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Floating Support Avatar on Bottom Right */}
+      {/* Floating Messenger Chat Button on Bottom Right */}
       <div className="fixed bottom-6 right-6 z-40 hidden sm:block">
         <a
           href="https://wa.me/8801700000000"
           target="_blank"
           rel="noopener noreferrer"
           title="Chat with Customer Support"
-          className="group relative flex size-12 items-center justify-center rounded-full bg-zinc-900 p-0.5 shadow-2xl ring-2 ring-emerald-500 transition-transform hover:scale-110 active:scale-95"
+          className="group relative flex size-12 items-center justify-center rounded-full p-0.5 bg-gradient-to-br from-[#00B2FF] via-[#006AFF] to-[#A033FF] shadow-2xl ring-2 ring-emerald-500 transition-transform hover:scale-110 active:scale-95"
         >
-          <div className="relative size-full rounded-full overflow-hidden bg-zinc-800 flex items-center justify-center text-white">
-            {/* Customer agent avatar */}
-            <span className="text-base font-bold">👩‍💼</span>
-          </div>
+          <span className="relative flex size-full items-center justify-center rounded-full overflow-hidden">
+            <MessengerIcon className="size-7" />
+          </span>
           {/* Active online indicator */}
           <span className="absolute top-0 right-0 size-3.5 rounded-full bg-emerald-500 border-2 border-zinc-950" />
         </a>

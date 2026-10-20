@@ -7,6 +7,7 @@ import Navbar from "@/components/navbar";
 import TopBar from "@/components/top-bar";
 import Footer from "@/components/footer";
 import { CartProvider } from "@/providers/cart-context";
+import { WishlistProvider } from "@/providers/wishlist-context";
 
 const montserrat = Montserrat({
   variable: "--font-sans",
@@ -33,9 +34,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <SmoothScrollProvider>
           <GsapProvider>
             <CartProvider>
-              <Navbar/>
-              {children}
-              <Footer/>
+              <WishlistProvider>
+                <TopBar />
+                <Navbar />
+                {children}
+                <Footer />
+              </WishlistProvider>
             </CartProvider>
           </GsapProvider>
         </SmoothScrollProvider>

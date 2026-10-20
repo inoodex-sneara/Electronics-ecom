@@ -15,7 +15,9 @@ import {
 import { FLASH_SALE_PRODUCTS, type FlashSaleItem } from "@/data/flash-sale";
 import { formatBdt, type ProductItem } from "@/data/products";
 import QuickViewModal from "@/components/quick-view-modal";
+import OfferBadge from "@/components/offer-badge";
 import { useCart } from "@/providers/cart-context";
+import { useWishlist } from "@/providers/wishlist-context";
 
 interface TimeLeft {
   hours: string;
@@ -40,7 +42,7 @@ function getTimeLeft(): TimeLeft {
 
 export default function FlashSaleSection() {
   const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null);
-  const [wishlist, setWishlist] = useState<Record<string, boolean>>({});
+  const { has: hasWish, toggle } = useWishlist();
   const [quickViewProduct, setQuickViewProduct] = useState<ProductItem | null>(null);
   const [addedItem, setAddedItem] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -59,12 +61,19 @@ export default function FlashSaleSection() {
     };
   }, []);
 
-  const toggleWishlist = (e: React.MouseEvent, productId: string) => {
+  const toggleWishlist = (e: React.MouseEvent, product: FlashSaleItem) => {
     e.preventDefault();
     e.stopPropagation();
-    const nextState = !wishlist[productId];
-    setWishlist((prev) => ({ ...prev, [productId]: nextState }));
-    showToast(nextState ? "Added to your Wishlist" : "Removed from Wishlist");
+    const added = toggle({
+      id: product.id,
+      name: product.name,
+      brand: product.brand,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      image: product.image,
+      inStock: product.inStock ?? true,
+    });
+    showToast(added ? "Added to your Wishlist" : "Removed from Wishlist");
   };
 
   const handleAddToCart = (e: React.MouseEvent, product: FlashSaleItem) => {
@@ -184,7 +193,7 @@ export default function FlashSaleSection() {
         {/* 10 Products Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
           {homeProducts.map((product) => {
-            const isWishlisted = !!wishlist[product.id];
+            const isWishlisted = hasWish(product.id);
             const isAdded = addedItem === product.id;
             const percentSold = Math.round((product.soldCount / product.totalStock) * 100);
             const savings = product.originalPrice - product.price;
@@ -201,12 +210,17 @@ export default function FlashSaleSection() {
                     {product.tag}
                   </span>
                 </div>
+                <OfferBadge
+                  price={product.price}
+                  originalPrice={product.originalPrice}
+                  className="top-11"
+                />
 
                 {/* Quick Action Floating Buttons */}
                 <div className="absolute top-2.5 right-2.5 z-10 flex flex-col gap-1.5 opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-200">
                   <button
                     type="button"
-                    onClick={(e) => toggleWishlist(e, product.id)}
+                    onClick={(e) => toggleWishlist(e, product)}
                     className={`size-8 rounded-full flex items-center justify-center shadow-md backdrop-blur-md transition-all active:scale-90 ${
                       isWishlisted
                         ? "bg-emerald-600 text-white"
@@ -330,13 +344,21 @@ export default function FlashSaleSection() {
       {quickViewProduct && (
         <QuickViewModal
           product={quickViewProduct}
-          wishlisted={!!wishlist[quickViewProduct.id]}
+          wishlisted={hasWish(quickViewProduct.id)}
           onClose={() => setQuickViewProduct(null)}
           onAddToCart={addToCartFromModal}
           onToggleWishlist={(id) => {
-            const nextState = !wishlist[id];
-            setWishlist((prev) => ({ ...prev, [id]: nextState }));
-            showToast(nextState ? "Added to your Wishlist" : "Removed from Wishlist");
+            const p = quickViewProduct;
+            const added = toggle({
+              id,
+              name: p.name,
+              brand: p.brand,
+              price: p.price,
+              originalPrice: p.originalPrice,
+              image: p.image,
+              inStock: p.inStock ?? true,
+            });
+            showToast(added ? "Added to your Wishlist" : "Removed from Wishlist");
           }}
         />
       )}

@@ -24,6 +24,9 @@ export interface ContactSupportInfo {
 }
 
 export interface TopBarProps {
+  bannerImage?: string;
+  bannerHref?: string;
+  bannerAlt?: string;
   announcement?: AnnouncementItem;
   supportInfo?: ContactSupportInfo;
 }

@@ -13,10 +13,12 @@ import {
 } from "lucide-react";
 import { NEW_PRODUCTS, formatBdt, type ProductItem } from "@/data/products";
 import QuickViewModal from "@/components/quick-view-modal";
+import OfferBadge from "@/components/offer-badge";
 import { useCart } from "@/providers/cart-context";
+import { useWishlist } from "@/providers/wishlist-context";
 
 export default function NewCollection() {
-  const [wishlist, setWishlist] = useState<Record<string, boolean>>({});
+  const { has: hasWish, toggle } = useWishlist();
   const [quickViewProduct, setQuickViewProduct] = useState<ProductItem | null>(null);
   const [addedItem, setAddedItem] = useState<string | null>(null);
   const { addItem } = useCart();
@@ -24,16 +26,25 @@ export default function NewCollection() {
 
   const filteredProducts = NEW_PRODUCTS.slice(0, 8);
 
-  const toggleWishlist = (e: React.MouseEvent, productId: string) => {
+  const toggleWishlist = (e: React.MouseEvent, product: ProductItem) => {
     e.preventDefault();
     e.stopPropagation();
-    applyWishlistToggle(productId);
+    applyWishlistToggle(product.id);
   };
 
   const applyWishlistToggle = (productId: string) => {
-    const nextState = !wishlist[productId];
-    setWishlist((prev) => ({ ...prev, [productId]: nextState }));
-    showToast(nextState ? "Added to your Wishlist" : "Removed from Wishlist");
+    const product = NEW_PRODUCTS.find((p) => p.id === productId);
+    if (!product) return;
+    const added = toggle({
+      id: product.id,
+      name: product.name,
+      brand: product.brand,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      image: product.image,
+      inStock: product.inStock,
+    });
+    showToast(added ? "Added to your Wishlist" : "Removed from Wishlist");
   };
 
   const handleAddToCart = (e: React.MouseEvent, product: ProductItem) => {
@@ -157,7 +168,7 @@ export default function NewCollection() {
           className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5"
         >
           {filteredProducts.map((product) => {
-            const isWishlisted = !!wishlist[product.id];
+            const isWishlisted = hasWish(product.id);
             const isJustAdded = addedItem === product.id;
 
             return (
@@ -185,10 +196,15 @@ export default function NewCollection() {
                   >
                     {product.tag}
                   </span>
+                  <OfferBadge
+                    price={product.price}
+                    originalPrice={product.originalPrice}
+                    className="top-10"
+                  />
 
                   {/* Wishlist Button */}
                   <button
-                    onClick={(e) => toggleWishlist(e, product.id)}
+                    onClick={(e) => toggleWishlist(e, product)}
                     aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
                     className="absolute top-2.5 right-2.5 z-10 flex size-7 sm:size-8 items-center justify-center rounded-full bg-white/85 backdrop-blur-xs text-zinc-600 shadow-xs transition-all hover:bg-white hover:text-rose-600 active:scale-90"
                   >
@@ -283,7 +299,7 @@ export default function NewCollection() {
       {quickViewProduct && (
         <QuickViewModal
           product={quickViewProduct}
-          wishlisted={!!wishlist[quickViewProduct.id]}
+          wishlisted={hasWish(quickViewProduct.id)}
           onClose={() => setQuickViewProduct(null)}
           onToggleWishlist={applyWishlistToggle}
           onAddToCart={addToCartFromModal}

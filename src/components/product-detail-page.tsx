@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { formatBdt, type ProductItem } from "@/data/products";
 import { useCart } from "@/providers/cart-context";
+import { useWishlist } from "@/providers/wishlist-context";
 
 interface ProductDetailPageProps {
   product: ProductItem;
@@ -41,7 +42,8 @@ const SAMPLE_REVIEWS = [
 export default function ProductDetailPage({ product, related }: ProductDetailPageProps) {
   const router = useRouter();
   const [selectedColor, setSelectedColor] = useState(product.colors?.[0]?.name || "");
-  const [wishlist, setWishlist] = useState(false);
+  const { has: hasWish, toggle: toggleWish } = useWishlist();
+  const wishlisted = hasWish(product.id);
   const [added, setAdded] = useState(false);
   const [tab, setTab] = useState<"specs" | "desc">("specs");
   const [toast, setToast] = useState<string | null>(null);
@@ -144,10 +146,21 @@ export default function ProductDetailPage({ product, related }: ProductDetailPag
                 )}
                 <button
                   type="button"
-                  onClick={() => setWishlist((w) => !w)}
+                  onClick={() => {
+                    const added = toggleWish({
+                      id: product.id,
+                      name: product.name,
+                      brand: product.brand,
+                      price: product.price,
+                      originalPrice: product.originalPrice,
+                      image: product.image,
+                      inStock: product.inStock,
+                    });
+                    showToast(added ? "Added to your Wishlist" : "Removed from Wishlist");
+                  }}
                   className="absolute top-3 right-3 z-10 size-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow-md hover:bg-white transition-colors"
                 >
-                  <Heart className={`size-4 ${wishlist ? "fill-emerald-600 text-emerald-600" : "text-zinc-600"}`} />
+                  <Heart className={`size-4 ${wishlisted ? "fill-rose-500 text-rose-500" : "text-zinc-600"}`} />
                 </button>
                 <Image
                   src={gallery[activeImage]}

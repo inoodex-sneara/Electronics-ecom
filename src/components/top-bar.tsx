@@ -1,71 +1,36 @@
-// components/top-bar.tsx
+import Image from "next/image";
 import Link from "next/link";
-import { Truck, HelpCircle, PhoneCall } from "lucide-react";
 import type { TopBarProps } from "@/types/navigation";
 
-const DEFAULT_ANNOUNCEMENT = {
-  tag: "Launch Offer",
-  message: "Get 10% off on your first ecosystem order with code:",
-  promoCode: "SYNCHRO10",
-};
-
-const DEFAULT_SUPPORT = {
-  phone: "+8801700000000",
-  displayPhone: "+880 1700-000000",
-  trackOrderUrl: "/track-order",
-  supportUrl: "/support",
-};
-
 export default function TopBar({
-  announcement = DEFAULT_ANNOUNCEMENT,
-  supportInfo = DEFAULT_SUPPORT,
+  bannerImage = "/images/Banner/top-bar-deals.png",
+  bannerHref = "/offers/flash-sale",
+  bannerAlt = "Electronics & Appliances Deals - Up to 43% Off - Official Warranty & EMI Facility",
 }: TopBarProps) {
   return (
-    <div className="w-full bg-zinc-900/90 border-b border-zinc-800 text-xs text-zinc-400 py-1.5 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        
-        {/* অ্যানাউন্সমেন্ট */}
-        <div className="flex items-center gap-2">
-          <span className="text-cyan-400 font-semibold uppercase tracking-wider text-[11px] bg-cyan-950/60 border border-cyan-800/50 px-2 py-0.5 rounded-full">
-            {announcement.tag}
-          </span>
-          <span className="hidden sm:inline text-zinc-300">
-            {announcement.message}{" "}
-            {announcement.promoCode && (
-              <strong className="text-white font-medium">{announcement.promoCode}</strong>
-            )}
-          </span>
-        </div>
-
-        {/* কুইক ইউটিলিটি লিংকস */}
-        <div className="flex items-center gap-4 text-[11px]">
-          <Link
-            href={supportInfo.trackOrderUrl}
-            className="hidden md:flex items-center gap-1.5 hover:text-cyan-400 transition-colors"
-          >
-            <Truck className="w-3.5 h-3.5 text-zinc-500" />
-            <span>Track Order</span>
-          </Link>
-
-          <Link
-            href={supportInfo.supportUrl}
-            className="hidden md:flex items-center gap-1.5 hover:text-cyan-400 transition-colors"
-          >
-            <HelpCircle className="w-3.5 h-3.5 text-zinc-500" />
-            <span>Support</span>
-          </Link>
-
-          <div className="h-3 w-[1px] bg-zinc-800 hidden md:block" />
-
-          <a
-            href={`tel:${supportInfo.phone}`}
-            className="flex items-center gap-1.5 text-zinc-300 hover:text-cyan-400 transition-colors"
-          >
-            <PhoneCall className="w-3 h-3 text-cyan-500" />
-            <span>{supportInfo.displayPhone}</span>
-          </a>
-        </div>
-
+    <div
+      role="banner"
+      aria-label="Promotional Announcement"
+      className="relative w-full bg-[#074799] border-b border-[#00387a] overflow-hidden"
+    >
+      <div className="relative mx-auto max-w-7xl px-2 sm:px-4 lg:px-6 flex items-center justify-center">
+        {/* Banner Link */}
+        <Link
+          href={bannerHref}
+          className="group relative block w-full text-center transition-opacity hover:opacity-95"
+          aria-label={bannerAlt}
+        >
+          <div className="relative mx-auto w-full aspect-[1024/57] min-h-[38px] sm:min-h-[46px] md:min-h-[54px] max-h-[64px] flex items-center justify-center">
+            <Image
+              src={bannerImage}
+              alt={bannerAlt}
+              fill
+              priority
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 95vw, 1280px"
+              className="object-contain object-center transition-transform duration-300 group-hover:scale-[1.005]"
+            />
+          </div>
+        </Link>
       </div>
     </div>
   );

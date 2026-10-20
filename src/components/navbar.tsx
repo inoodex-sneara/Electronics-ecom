@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   ChevronDown,
+  Heart,
   Megaphone,
   Menu,
   Search,
@@ -15,10 +16,9 @@ import {
   X,
 } from "lucide-react";
 import { useCart } from "@/providers/cart-context";
+import { useWishlist } from "@/providers/wishlist-context";
 import { NAV_CATEGORIES, getNavProducts } from "@/data/nav-categories";
 import { formatBdt } from "@/data/products";
-
-const categories = NAV_CATEGORIES.map((c) => ({ name: c.name, href: c.href }));
 
 const actions = [
   { name: "Track Order", href: "/track-order", icon: Truck },
@@ -27,8 +27,10 @@ const actions = [
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileCategory, setMobileCategory] = useState<string | null>(null);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const { count } = useCart();
+  const { count: wishlistCount } = useWishlist();
   const pathname = usePathname();
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
@@ -53,6 +55,16 @@ export default function Navbar() {
           </div>
 
           <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
+            <Link
+              href="/wishlist"
+              aria-label="Wishlist"
+              className="relative flex size-10 items-center justify-center rounded-full border border-white/40 text-white transition-colors hover:bg-white/10"
+            >
+              <Heart className="size-5 text-white" />
+              <span className="absolute -top-1 -right-1 flex size-5 items-center justify-center rounded-full bg-rose-500 text-[11px] font-bold text-white shadow-xs">
+                {wishlistCount}
+              </span>
+            </Link>
             <Link
               href="/cart"
               aria-label="Cart"
@@ -81,7 +93,7 @@ export default function Navbar() {
         </div>
 
         <nav className="hidden border-t border-emerald-500/10 lg:block">
-          <div className="flex h-11 items-center gap-4 xl:gap-6">
+          <div className="flex h-11 items-center gap-4 pb-1.5 xl:gap-6">
             <ul className="flex min-w-0 mt-6 flex-1 items-center gap-3 whitespace-nowrap text-[13px] xl:gap-5 xl:text-sm">
               {NAV_CATEGORIES.map((category, index) => {
                 const isOpen = openMenu === category.slug;
@@ -184,14 +196,16 @@ export default function Navbar() {
       </div>
 
       {mobileMenuOpen && (
-        <div className="border-t border-emerald-500/10 bg-emerald-950 px-4 pt-3 pb-5 lg:hidden">
-          <div className="relative mb-4">
-            <input
-              type="search"
-              placeholder="Search for products..."
-              className="h-10 w-full rounded-md border border-white/10 bg-emerald-900 pr-12 pl-4 text-sm text-white placeholder:text-zinc-400 focus:border-emerald-500/60 focus:outline-none"
-            />
-            <Search className="pointer-events-none absolute top-1/2 right-3.5 size-5 -translate-y-1/2 text-zinc-400" />
+        <div className="max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain custom-scrollbar border-t border-emerald-500/10 bg-emerald-950 px-4 pb-8 lg:hidden">
+          <div className="sticky top-0 z-10 bg-emerald-950 pt-3 pb-3">
+            <div className="relative">
+              <input
+                type="search"
+                placeholder="Search for products..."
+                className="h-10 w-full rounded-md border border-white/10 bg-emerald-900 pr-12 pl-4 text-sm text-white placeholder:text-zinc-400 focus:border-emerald-500/60 focus:outline-none"
+              />
+              <Search className="pointer-events-none absolute top-1/2 right-3.5 size-5 -translate-y-1/2 text-zinc-400" />
+            </div>
           </div>
           <ul className="space-y-1">
             <li>
@@ -244,23 +258,9 @@ export default function Navbar() {
                           key={p.id}
                           href={`/products/${p.id}`}
                           onClick={() => setMobileMenuOpen(false)}
-                          className="flex items-center gap-2.5 rounded-md px-2 py-1.5 hover:bg-white/5 transition-colors"
+                          className="block rounded-md px-2 py-1.5 text-xs text-zinc-200 hover:bg-white/5 hover:text-white transition-colors"
                         >
-                          <span className="relative size-8 shrink-0 overflow-hidden rounded bg-white">
-                            <Image
-                              src={p.image}
-                              alt=""
-                              fill
-                              sizes="32px"
-                              className="object-contain p-0.5"
-                            />
-                          </span>
-                          <span className="min-w-0 flex-1">
-                            <span className="block truncate text-xs text-zinc-200">{p.name}</span>
-                            <span className="block text-xs font-bold text-emerald-400">
-                              {formatBdt(p.price)}
-                            </span>
-                          </span>
+                          <span className="truncate">{p.name}</span>
                         </Link>
                       ))}
                     </div>

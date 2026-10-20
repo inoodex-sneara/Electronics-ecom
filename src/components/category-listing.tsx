@@ -3,7 +3,8 @@
 import React, { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Star, Zap, Search, SlidersHorizontal, X, Percent, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, Search, SlidersHorizontal, X, Percent, ChevronLeft, ChevronRight } from "lucide-react";
+import OfferBadge from "@/components/offer-badge";
 import { formatBdt, type ProductItem } from "@/data/products";
 
 type SortOption = "featured" | "price-asc" | "price-desc" | "rating";
@@ -350,9 +351,7 @@ export default function CategoryListing({ category, products }: CategoryPageProp
                   >
                     <div className="relative w-full aspect-[4/3] bg-zinc-50 overflow-hidden">
                       {disc > 0 && (
-                        <span className="absolute top-2 left-2 z-10 inline-flex items-center gap-1 rounded-md bg-gradient-to-r from-emerald-500 to-teal-500 px-1.5 py-0.5 text-[10px] font-black text-white shadow-sm">
-                          <Zap className="size-2.5 fill-white" />-{disc}%
-                        </span>
+                        <OfferBadge price={p.price} originalPrice={p.originalPrice} className="top-2" />
                       )}
                       <Image
                         src={p.image}

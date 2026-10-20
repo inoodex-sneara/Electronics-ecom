@@ -28,6 +28,7 @@ import {
 import { formatBdt } from "@/data/products";
 import { useCart } from "@/providers/cart-context";
 import { openInvoicePdf, buildInvoiceHtml, type InvoiceOrder } from "@/lib/invoice";
+import { saveOrder } from "@/lib/orders";
 
 function BkashIcon({ size = 24 }: { size?: number }) {
   return (
@@ -260,6 +261,7 @@ export default function CheckoutPage() {
       setOrderId(id);
       setPlaced(true);
       setPlacing(false);
+      saveOrder(snapshot);
       clearCart();
       window.scrollTo({ top: 0, behavior: "smooth" });
     }, 900);

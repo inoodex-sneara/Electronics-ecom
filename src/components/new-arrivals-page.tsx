@@ -17,7 +17,9 @@ import {
 } from "lucide-react";
 import { NEW_PRODUCTS, CATEGORIES, formatBdt, type ProductItem } from "@/data/products";
 import QuickViewModal from "@/components/quick-view-modal";
+import OfferBadge from "@/components/offer-badge";
 import { useCart } from "@/providers/cart-context";
+import { useWishlist } from "@/providers/wishlist-context";
 
 type SortOption = "featured" | "price-asc" | "price-desc" | "rating";
 
@@ -67,7 +69,7 @@ export default function NewArrivalsPage() {
   const [maxPrice, setMaxPrice] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("featured");
-  const [wishlist, setWishlist] = useState<Record<string, boolean>>({});
+  const { has: hasWish, toggle } = useWishlist();
   const [quickViewProduct, setQuickViewProduct] = useState<ProductItem | null>(null);
   const [addedItem, setAddedItem] = useState<string | null>(null);
   const { addItem } = useCart();
@@ -124,16 +126,25 @@ export default function NewArrivalsPage() {
     }
   }, [activeCategories, activeBrands, inStock, soldOut, minPrice, maxPrice, searchQuery, sortBy]);
 
-  const toggleWishlist = (e: React.MouseEvent, productId: string) => {
+  const toggleWishlist = (e: React.MouseEvent, product: ProductItem) => {
     e.preventDefault();
     e.stopPropagation();
-    applyWishlistToggle(productId);
+    applyWishlistToggle(product.id);
   };
 
   const applyWishlistToggle = (productId: string) => {
-    const nextState = !wishlist[productId];
-    setWishlist((prev) => ({ ...prev, [productId]: nextState }));
-    showToast(nextState ? "Added to your Wishlist" : "Removed from Wishlist");
+    const product = [...NEW_PRODUCTS].find((p) => p.id === productId);
+    if (!product) return;
+    const added = toggle({
+      id: product.id,
+      name: product.name,
+      brand: product.brand,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      image: product.image,
+      inStock: product.inStock,
+    });
+    showToast(added ? "Added to your Wishlist" : "Removed from Wishlist");
   };
 
   const handleAddToCart = (e: React.MouseEvent, product: ProductItem) => {
@@ -432,7 +443,7 @@ export default function NewArrivalsPage() {
               className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4"
             >
           {filteredProducts.map((product) => {
-            const isWishlisted = !!wishlist[product.id];
+            const isWishlisted = hasWish(product.id);
             const isJustAdded = addedItem === product.id;
             const savings = product.originalPrice - product.price;
 
@@ -456,12 +467,17 @@ export default function NewArrivalsPage() {
                     {product.tag}
                   </span>
                 </div>
+                <OfferBadge
+                  price={product.price}
+                  originalPrice={product.originalPrice}
+                  className="top-9"
+                />
 
                 {/* Floating Action Buttons */}
                 <div className="absolute top-2 right-2 z-10 flex flex-col gap-1 opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-200">
                   <button
                     type="button"
-                    onClick={(e) => toggleWishlist(e, product.id)}
+                    onClick={(e) => toggleWishlist(e, product)}
                     className={`size-7 rounded-full flex items-center justify-center shadow-md backdrop-blur-md transition-all active:scale-90 ${
                       isWishlisted
                         ? "bg-emerald-600 text-white"
@@ -597,7 +613,7 @@ export default function NewArrivalsPage() {
       {quickViewProduct && (
         <QuickViewModal
           product={quickViewProduct}
-          wishlisted={!!wishlist[quickViewProduct.id]}
+          wishlisted={hasWish(quickViewProduct.id)}
           onClose={() => setQuickViewProduct(null)}
           onToggleWishlist={applyWishlistToggle}
           onAddToCart={addToCartFromModal}
