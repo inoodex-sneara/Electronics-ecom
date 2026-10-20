@@ -1,31 +1,33 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Megaphone, Menu, Phone, Search, ShoppingCart, Truck, User, X } from "lucide-react";
+import {
+  ChevronDown,
+  Megaphone,
+  Menu,
+  Search,
+  ShoppingCart,
+  Truck,
+  User,
+  X,
+} from "lucide-react";
 import { useCart } from "@/providers/cart-context";
+import { NAV_CATEGORIES, getNavProducts } from "@/data/nav-categories";
+import { formatBdt } from "@/data/products";
 
-const categories = [
-  { name: "Smartphone", href: "/category/smartphone" },
-  { name: "Tablet", href: "/category/tablet" },
-  { name: "Mac", href: "/category/mac" },
-  { name: "Laptop", href: "/category/laptop" },
-  { name: "Desktop", href: "/category/desktop" },
-  { name: "Accessories", href: "/category/accessories" },
-  { name: "Sound Appliance", href: "/category/sound-appliance" },
-  { name: "Smart Appliance", href: "/category/smart-appliance" },
-  { name: "Feature Phone", href: "/category/feature-phone" },
-];
+const categories = NAV_CATEGORIES.map((c) => ({ name: c.name, href: c.href }));
 
 const actions = [
   { name: "Track Order", href: "/track-order", icon: Truck },
   { name: "Offer", href: "/offers", icon: Megaphone },
-  { name: "Used Device", href: "/used-device", icon: Phone },
 ];
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
   const { count } = useCart();
   const pathname = usePathname();
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
@@ -51,29 +53,6 @@ export default function Navbar() {
           </div>
 
           <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
-            <Link
-              href="/track-order"
-              className={`hidden rounded-md border px-3 py-1.5 text-xs font-semibold tracking-wide uppercase transition-colors md:flex lg:hidden items-center gap-1.5 ${
-                isActive("/track-order")
-                  ? "border-emerald-400 bg-emerald-500/20 text-emerald-300"
-                  : "border-white/20 text-zinc-200 hover:border-emerald-500/60 hover:text-emerald-400 hover:bg-emerald-500/10"
-              }`}
-            >
-              <Truck className="size-3.5" />
-              <span>Track Order</span>
-            </Link>
-
-            <Link
-              href="/pc-builder"
-              className={`hidden rounded-md border px-3 py-1.5 text-xs font-semibold tracking-wide uppercase transition-colors lg:block ${
-                isActive("/pc-builder")
-                  ? "border-emerald-400 bg-emerald-500/20 text-emerald-300"
-                  : "border-emerald-500/60 text-emerald-400 hover:bg-emerald-500/10"
-              }`}
-            >
-              PC Builder
-            </Link>
-           
             <Link
               href="/cart"
               aria-label="Cart"
@@ -102,30 +81,93 @@ export default function Navbar() {
         </div>
 
         <nav className="hidden border-t border-emerald-500/10 lg:block">
-          <div className="flex h-11 items-center gap-6">
-            <ul className="flex flex-1 items-center gap-5 text-sm whitespace-nowrap">
-              {categories.map((category) => (
-                <li key={category.href}>
-                  <Link
-                    href={category.href}
-                    className={`transition-colors ${
-                      isActive(category.href)
-                        ? "font-semibold text-emerald-400"
-                        : "text-zinc-200 hover:text-emerald-400"
-                    }`}
+          <div className="flex h-11 items-center gap-4 xl:gap-6">
+            <ul className="flex min-w-0 flex-1 items-center gap-3 whitespace-nowrap text-[13px] xl:gap-5 xl:text-sm">
+              {NAV_CATEGORIES.map((category, index) => {
+                const isOpen = openMenu === category.slug;
+                return (
+                  <li
+                    key={category.slug}
+                    className="relative"
+                    onMouseEnter={() => setOpenMenu(category.slug)}
+                    onMouseLeave={() => setOpenMenu(null)}
                   >
-                    {category.name}
-                  </Link>
-                </li>
-              ))}
+                    <Link
+                      href={category.href}
+                      onClick={() => setOpenMenu(null)}
+                      className={`inline-flex items-center gap-1 transition-colors ${
+                        isActive(category.href) || isOpen
+                          ? "font-semibold text-emerald-400"
+                          : "text-zinc-200 hover:text-emerald-400"
+                      }`}
+                    >
+                      {category.name}
+                      <ChevronDown
+                        className={`size-3 transition-transform duration-200 ${
+                          isOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    </Link>
+
+                    {isOpen && (
+                      <div
+                        className={`absolute top-full z-50 pt-1 ${
+                          index >= NAV_CATEGORIES.length - 2 ? "right-0" : "left-0"
+                        }`}
+                      >
+                        <div className="w-[560px] rounded-2xl border border-zinc-200 bg-white p-4 shadow-2xl shadow-black/20">
+                          <div className="flex items-center justify-between mb-3 pb-2.5 border-b border-zinc-100">
+                            <span className="text-xs font-black uppercase tracking-wider text-zinc-900">
+                              {category.name}
+                            </span>
+                            <Link
+                              href={category.href}
+                              onClick={() => setOpenMenu(null)}
+                              className="text-xs font-bold text-emerald-600 hover:text-emerald-700"
+                            >
+                              View All →
+                            </Link>
+                          </div>
+                          <div className="grid grid-cols-4 gap-3">
+                            {getNavProducts(category.slug).map((p) => (
+                              <Link
+                                key={p.id}
+                                href={`/products/${p.id}`}
+                                onClick={() => setOpenMenu(null)}
+                                className="group/item flex flex-col rounded-xl border border-zinc-200 bg-white p-2 transition-all hover:border-emerald-300 hover:shadow-md"
+                              >
+                                <div className="relative mx-auto size-16 overflow-hidden rounded-lg bg-zinc-50">
+                                  <Image
+                                    src={p.image}
+                                    alt={p.name}
+                                    fill
+                                    sizes="64px"
+                                    className="object-contain p-1 transition-transform duration-300 group-hover/item:scale-110"
+                                  />
+                                </div>
+                                <p className="mt-2 line-clamp-2 text-[11px] font-semibold leading-tight text-zinc-800 group-hover/item:text-emerald-700 min-h-[2.2em]">
+                                  {p.name}
+                                </p>
+                                <p className="mt-1 text-xs font-black text-emerald-600">
+                                  {formatBdt(p.price)}
+                                </p>
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
 
-            <div className="flex shrink-0 items-center gap-6">
+            <div className="hidden shrink-0 items-center gap-5 pl-4 lg:flex">
               {actions.map(({ name, href, icon: Icon }) => (
                 <Link
                   key={name}
                   href={href}
-                  className={`relative flex items-center gap-1.5 pt-1.5 text-sm whitespace-nowrap transition-colors ${
+                  className={`relative flex items-center gap-1.5 pt-1.5 text-[13px] whitespace-nowrap transition-colors ${
                     isActive(href) ? "text-emerald-400" : "text-white hover:text-emerald-400"
                   }`}
                 >
@@ -182,17 +224,7 @@ export default function Navbar() {
               </li>
             ))}
             <li>
-              <Link
-                href="/pc-builder"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`block rounded-md px-2 py-2 text-sm hover:bg-white/5 ${
-                  isActive("/pc-builder")
-                    ? "bg-emerald-500/15 font-semibold text-emerald-400"
-                    : "text-zinc-200"
-                }`}
-              >
-                PC Builder
-              </Link>
+          
             </li>
             <li>
               <Link
@@ -209,18 +241,7 @@ export default function Navbar() {
               </Link>
             </li>
             <li>
-              <Link
-                href="/used-device"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center gap-2 rounded-md px-2 py-2 text-sm hover:bg-white/5 ${
-                  isActive("/used-device")
-                    ? "bg-emerald-500/15 font-semibold text-emerald-400"
-                    : "text-zinc-200"
-                }`}
-              >
-                <Phone className="size-4 text-emerald-400" />
-                <span>Used Device</span>
-              </Link>
+              
             </li>
           </ul>
         </div>
