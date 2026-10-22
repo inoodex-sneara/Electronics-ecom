@@ -6,8 +6,6 @@ import Link from "next/link";
 import {
   ChevronLeft,
   ChevronRight,
-  Pause,
-  Play,
 } from "lucide-react";
 
 interface CategoryCircle {
@@ -113,18 +111,8 @@ const CATEGORIES: CategoryCircle[] = [
 export default function PopularCategories() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Ping-pong auto-scroll state and refs
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [isHovered, setIsHovered] = useState<boolean>(false);
   const [canScrollLeft, setCanScrollLeft] = useState<boolean>(false);
   const [canScrollRight, setCanScrollRight] = useState<boolean>(true);
-
-  const directionRef = useRef<1 | -1>(1); // 1 = moving right, -1 = moving left
-  const isPlayingRef = useRef<boolean>(true);
-  const isHoveredRef = useRef<boolean>(false);
-  const isInteractingRef = useRef<boolean>(false);
-  const pauseUntilRef = useRef<number>(0);
-  const scrollPosRef = useRef<number>(0);
 
   // Mouse drag support
   const isMouseDownRef = useRef<boolean>(false);
@@ -132,14 +120,11 @@ export default function PopularCategories() {
   const dragStartScrollRef = useRef<number>(0);
   const hasDraggedRef = useRef<boolean>(false);
 
-  // Sync state with refs
-  useEffect(() => {
-    isPlayingRef.current = isPlaying;
-  }, [isPlaying]);
-
-  useEffect(() => {
-    isHoveredRef.current = isHovered;
-  }, [isHovered]);
+  // Stepped auto-scroll refs
+  const directionRef = useRef<1 | -1>(1); // 1 = toward right, -1 = toward left
+  const isHoveredRef = useRef<boolean>(false);
+  const isInteractingRef = useRef<boolean>(false);
+  const pauseUntilRef = useRef<number>(0);
 
   // Update scroll boundaries
   const updateScrollStatus = useCallback(() => {
@@ -149,126 +134,81 @@ export default function PopularCategories() {
     if (maxScroll > 0) {
       setCanScrollLeft(el.scrollLeft > 6);
       setCanScrollRight(el.scrollLeft < maxScroll - 6);
+    } else {
+      setCanScrollLeft(false);
+      setCanScrollRight(false);
     }
   }, []);
 
-  // Ping-Pong continuous smooth scroller
   useEffect(() => {
-    const container = scrollRef.current;
-    if (!container) return;
-
-    let animationFrameId: number;
-    let lastTime = performance.now();
-
-    // Initial position sync
-    scrollPosRef.current = container.scrollLeft;
     updateScrollStatus();
-
-    const loop = (now: number) => {
-      const elapsed = now - lastTime;
-      lastTime = now;
-
-      const maxScroll = container.scrollWidth - container.clientWidth;
-
-      if (
-        maxScroll > 10 &&
-        isPlayingRef.current &&
-        !isHoveredRef.current &&
-        !isInteractingRef.current &&
-        now >= pauseUntilRef.current
-      ) {
-        // Silky smooth movement: ~42px per second
-        const speed = 42;
-        const delta = (speed * Math.min(elapsed, 64)) / 1000;
-
-        if (directionRef.current === 1) {
-          // Moving Right
-          if (scrollPosRef.current >= maxScroll - 1) {
-            // Reached Right Edge -> Pause, then reverse to Left
-            scrollPosRef.current = maxScroll;
-            container.scrollLeft = maxScroll;
-            directionRef.current = -1;
-            pauseUntilRef.current = now + 1600; // 1.6s pause before reversing
-          } else {
-            scrollPosRef.current += delta;
-            container.scrollLeft = scrollPosRef.current;
-          }
-        } else {
-          // Moving Left
-          if (scrollPosRef.current <= 1) {
-            // Reached Left Edge -> Pause, then reverse to Right
-            scrollPosRef.current = 0;
-            container.scrollLeft = 0;
-            directionRef.current = 1;
-            pauseUntilRef.current = now + 1600; // 1.6s pause before reversing
-          } else {
-            scrollPosRef.current -= delta;
-            container.scrollLeft = scrollPosRef.current;
-          }
-        }
-
-        updateScrollStatus();
-      }
-
-      animationFrameId = requestAnimationFrame(loop);
-    };
-
-    animationFrameId = requestAnimationFrame(loop);
-
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-    };
+    const onResize = () => updateScrollStatus();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
   }, [updateScrollStatus]);
 
-  // Native scroll sync (e.g. user manually scrolls with wheel / trackpad / touch)
   const handleScroll = () => {
-    const el = scrollRef.current;
-    if (!el) return;
     updateScrollStatus();
-    if (isInteractingRef.current || isHoveredRef.current) {
-      scrollPosRef.current = el.scrollLeft;
-    }
   };
 
-  // Manual arrow navigation
+  const getStepSize = (container: HTMLElement) => {
+    const firstItem = container.querySelector<HTMLElement>(":scope > div");
+    const gap = parseFloat(getComputedStyle(container).columnGap || "0") || 0;
+    return firstItem ? firstItem.offsetWidth + gap : 200;
+  };
+
+  // Stepped auto-scroll: one item at a time with a pause between steps,
+  // ping-pong at the edges (right → left → right …)
+  useEffect(() => {
+    const tick = () => {
+      const container = scrollRef.current;
+      if (!container) return;
+      if (isHoveredRef.current || isInteractingRef.current) return;
+      if (performance.now() < pauseUntilRef.current) return;
+
+      const maxScroll = container.scrollWidth - container.clientWidth;
+      if (maxScroll <= 10) return;
+
+      // Reverse direction at the edges
+      if (directionRef.current === 1 && container.scrollLeft >= maxScroll - 8) {
+        directionRef.current = -1;
+      } else if (directionRef.current === -1 && container.scrollLeft <= 8) {
+        directionRef.current = 1;
+      }
+
+      const step = getStepSize(container);
+      container.scrollBy({
+        left: directionRef.current === 1 ? step : -step,
+        behavior: "smooth",
+      });
+    };
+
+    const intervalId = setInterval(tick, 2800);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  // Pause stepping while the page itself is scrolling (prevents mobile jitter)
+  useEffect(() => {
+    const onWindowScroll = () => {
+      pauseUntilRef.current = performance.now() + 900;
+    };
+    window.addEventListener("scroll", onWindowScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onWindowScroll);
+  }, []);
+
+  // Manual arrow navigation — one item per click, smoothly animated
   const handleManualScroll = (direction: "left" | "right") => {
     const container = scrollRef.current;
     if (!container) return;
 
-    const scrollAmount = direction === "left" ? -380 : 380;
-    container.scrollBy({ left: scrollAmount, behavior: "smooth" });
-
-    // Temporarily pause auto-scroller for 3 seconds so user can browse manually
-    pauseUntilRef.current = performance.now() + 3000;
-
-    // Align auto-scroll direction with user intent
-    if (direction === "left") {
-      directionRef.current = -1;
-    } else {
-      directionRef.current = 1;
-    }
-
-    setTimeout(() => {
-      if (container) {
-        scrollPosRef.current = container.scrollLeft;
-        updateScrollStatus();
-      }
-    }, 400);
-  };
-
-  // Toggle Auto-scroller play/pause
-  const togglePlayPause = () => {
-    setIsPlaying((prev) => {
-      const next = !prev;
-      isPlayingRef.current = next;
-      if (next) {
-        pauseUntilRef.current = performance.now() + 400;
-        if (scrollRef.current) {
-          scrollPosRef.current = scrollRef.current.scrollLeft;
-        }
-      }
-      return next;
+    container.scrollBy({
+      left: direction === "left" ? -getStepSize(container) : getStepSize(container),
+      behavior: "smooth",
     });
+
+    // Follow the user's intent and give them time to browse
+    directionRef.current = direction === "left" ? -1 : 1;
+    pauseUntilRef.current = performance.now() + 3000;
   };
 
   // Mouse Drag Handlers (for effortless desktop click-and-drag)
@@ -289,7 +229,6 @@ export default function PopularCategories() {
       hasDraggedRef.current = true;
     }
     scrollRef.current.scrollLeft = dragStartScrollRef.current - distance;
-    scrollPosRef.current = scrollRef.current.scrollLeft;
     updateScrollStatus();
   };
 
@@ -298,16 +237,13 @@ export default function PopularCategories() {
     isMouseDownRef.current = false;
     isInteractingRef.current = false;
     pauseUntilRef.current = performance.now() + 2000;
-    if (scrollRef.current) {
-      scrollPosRef.current = scrollRef.current.scrollLeft;
-    }
     // Reset drag flag after microtask to prevent link triggering
     setTimeout(() => {
       hasDraggedRef.current = false;
     }, 100);
   };
 
-  // Touch event handlers for mobile
+  // Touch handlers — pause stepping while the user is touching the row
   const handleTouchStart = () => {
     isInteractingRef.current = true;
   };
@@ -315,10 +251,7 @@ export default function PopularCategories() {
   const handleTouchEnd = () => {
     isInteractingRef.current = false;
     pauseUntilRef.current = performance.now() + 2000;
-    if (scrollRef.current) {
-      scrollPosRef.current = scrollRef.current.scrollLeft;
-      updateScrollStatus();
-    }
+    updateScrollStatus();
   };
 
   return (
@@ -335,22 +268,8 @@ export default function PopularCategories() {
             </p>
           </div>
 
-          {/* Interactive Navigation and Play/Pause Controls */}
+          {/* Interactive Navigation Controls */}
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-            {/* Play / Pause Toggle Button */}
-            <button
-              onClick={togglePlayPause}
-              aria-label={isPlaying ? "Pause auto scroll" : "Resume auto scroll"}
-              title={isPlaying ? "Pause auto scroll" : "Resume auto scroll"}
-              className="flex size-7 sm:size-9 items-center justify-center rounded-full border border-zinc-300 bg-white text-zinc-700 shadow-xs transition-all hover:bg-zinc-100 hover:text-zinc-950 active:scale-95"
-            >
-              {isPlaying ? (
-                <Pause className="size-3 sm:size-3.5 fill-current text-zinc-600" />
-              ) : (
-                <Play className="size-3 sm:size-3.5 fill-current text-emerald-600 ml-0.5" />
-              )}
-            </button>
-
             {/* Left Button */}
             <button
               onClick={() => handleManualScroll("left")}
@@ -403,9 +322,11 @@ export default function PopularCategories() {
           <div
             ref={scrollRef}
             onScroll={handleScroll}
-            onMouseEnter={() => setIsHovered(true)}
+            onMouseEnter={() => {
+              isHoveredRef.current = true;
+            }}
             onMouseLeave={() => {
-              setIsHovered(false);
+              isHoveredRef.current = false;
               handleMouseUp();
             }}
             onMouseDown={handleMouseDown}
@@ -413,7 +334,7 @@ export default function PopularCategories() {
             onMouseUp={handleMouseUp}
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
-            className="flex items-start gap-3 sm:gap-6 lg:gap-8 overflow-x-auto no-scrollbar scroll-smooth py-2 sm:py-3 px-1 sm:px-2 cursor-grab active:cursor-grabbing touch-pan-x"
+            className="flex items-start gap-3 sm:gap-6 lg:gap-8 overflow-x-auto no-scrollbar py-2 sm:py-3 px-1 sm:px-2 cursor-grab active:cursor-grabbing touch-pan-x"
             style={{ WebkitOverflowScrolling: "touch" }}
           >
             {CATEGORIES.map((cat) => (
