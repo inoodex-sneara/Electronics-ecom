@@ -412,10 +412,7 @@ export default function FlashSalePage() {
           {/* Product Grid */}
           <div className="flex-1 min-w-0">
             {/* Toolbar */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-4 border-b border-zinc-200">
-              <span className="text-xs text-zinc-500">
-                Showing <strong className="text-zinc-900 text-sm">{filteredProducts.length}</strong> flash deals
-              </span>
+            <div className="flex flex-wrap items-center justify-end gap-3 pb-4 mb-4 border-b border-zinc-200">
               <div className="flex items-center gap-1.5 bg-white border border-zinc-200 rounded-full px-3 py-1.5 text-xs">
                 <SlidersHorizontal className="size-3.5 text-zinc-400" />
                 <select

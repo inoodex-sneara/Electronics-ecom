@@ -240,14 +240,7 @@ export default function CategoryListing({ category, products }: CategoryPageProp
     <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-6 pb-16">
       {/* Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-4 border-b border-zinc-200">
-        <span className="text-xs text-zinc-500">
-          Showing{" "}
-          <strong className="text-zinc-900 text-sm">
-            {pageItems.length}
-          </strong>{" "}
-          of {filteredProducts.length} products
-        </span>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 ml-auto">
           <SlidersHorizontal className="size-4 text-zinc-400 hidden sm:block" />
           <select
             value={sortBy}

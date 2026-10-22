@@ -341,15 +341,7 @@ export default function NewArrivalsPage() {
     <div className="relative w-full bg-white min-h-screen pb-20">
       {/* Toolbar */}
       <section className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-zinc-200/80">
-        <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-3">
-          <span className="text-xs sm:text-sm text-zinc-500 font-medium">
-            Showing{" "}
-            <strong className="text-zinc-900 text-sm sm:text-base">
-              {filteredProducts.length}
-            </strong>{" "}
-            products
-          </span>
-
+        <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 py-3 flex items-center justify-end gap-3">
           {/* Sort */}
           <div className="flex items-center gap-2 shrink-0">
             <SlidersHorizontal className="size-4 text-zinc-400 hidden sm:block" />

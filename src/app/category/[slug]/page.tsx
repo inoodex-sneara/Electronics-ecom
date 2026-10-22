@@ -42,9 +42,6 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
           <h1 className="mt-3 text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
             {cat.name}
           </h1>
-          <p className="mt-1 text-sm text-zinc-400">
-            {products.length} products — genuine, warranty-backed, delivered nationwide.
-          </p>
         </div>
       </section>
 

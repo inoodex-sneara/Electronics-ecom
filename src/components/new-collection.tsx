@@ -165,7 +165,7 @@ export default function NewCollection() {
             hidden: {},
             active: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
           }}
-          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5"
+          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-4"
         >
           {filteredProducts.map((product) => {
             const isWishlisted = hasWish(product.id);
