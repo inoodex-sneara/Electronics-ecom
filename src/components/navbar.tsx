@@ -177,13 +177,13 @@ export default function Navbar() {
                                 onClick={() => setOpenMenu(null)}
                                 className="group/item flex flex-col rounded-xl border border-zinc-200 bg-white p-2 transition-all hover:border-emerald-300 hover:shadow-md"
                               >
-                                <div className="relative mx-auto size-16 overflow-hidden rounded-lg bg-zinc-50">
+                                <div className="relative mx-auto size-16 overflow-hidden rounded-lg bg-white">
                                   <Image
                                     src={p.image}
                                     alt={p.name}
                                     fill
                                     sizes="64px"
-                                    className="object-contain p-1 transition-transform duration-300 group-hover/item:scale-110"
+                                    className="object-cover mix-blend-multiply transition-transform duration-300 group-hover/item:scale-110"
                                   />
                                 </div>
                                 <p className="mt-2 line-clamp-2 text-[11px] font-semibold leading-tight text-zinc-800 group-hover/item:text-emerald-700 min-h-[2.2em]">

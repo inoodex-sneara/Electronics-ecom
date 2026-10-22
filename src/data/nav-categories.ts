@@ -7,6 +7,7 @@ export interface NavCategory {
   href: string;
   match: string[];
   productIds: string[];
+  fillEmpty?: boolean;
 }
 
 const ALL_PRODUCTS: ProductItem[] = [...NEW_PRODUCTS, ...FLASH_SALE_PRODUCTS];
@@ -16,8 +17,9 @@ export const NAV_CATEGORIES: NavCategory[] = [
     name: "Smartphone",
     slug: "smartphone",
     href: "/category/smartphone",
-    match: ["iphone", "galaxy", "pixel", "smartphone", "phone"],
+    match: ["iphone", "galaxy", "pixel", "smartphone"],
     productIds: ["prod-1", "prod-2", "flash-1", "flash-16"],
+    fillEmpty: false,
   },
   {
     name: "Tablet",
@@ -25,6 +27,7 @@ export const NAV_CATEGORIES: NavCategory[] = [
     href: "/category/tablet",
     match: ["ipad", "tablet", "tabx"],
     productIds: ["prod-7", "prod-19", "flash-7"],
+    fillEmpty: false,
   },
   {
     name: "Mac",
@@ -32,41 +35,47 @@ export const NAV_CATEGORIES: NavCategory[] = [
     href: "/category/mac",
     match: ["macbook"],
     productIds: ["prod-3", "flash-3"],
+    fillEmpty: false,
   },
   {
     name: "Laptop",
     slug: "laptop",
     href: "/category/laptop",
     match: ["laptop", "rog zephyrus", "zenith"],
-    productIds: ["prod-4", "flash-8", "flash-3", "prod-3"],
+    productIds: ["prod-4", "flash-8"],
+    fillEmpty: false,
   },
   {
     name: "Desktop",
     slug: "desktop",
     href: "/category/desktop",
-    match: ["desktop", "monitor", "cyberstation", "keyboard", "mouse"],
+    match: ["monitor", "cyberstation", "keyboard", "mouse"],
     productIds: ["prod-8", "prod-11", "prod-17", "prod-13"],
+    fillEmpty: false,
   },
   {
     name: "Sound Appliance",
     slug: "sound-appliance",
     href: "/category/sound-appliance",
-    match: ["headphone", "speaker", "earbuds", "soundbar", "airpods", "audio & wearables"],
-    productIds: ["prod-5", "flash-2", "flash-9", "prod-12"],
+    match: ["headphone", "speaker", "earbuds", "soundbar", "airpods"],
+    productIds: ["prod-5", "flash-2", "flash-9", "prod-12", "prod-15", "prod-20", "flash-13"],
+    fillEmpty: false,
   },
   {
     name: "Smart Appliance",
     slug: "smart-appliance",
     href: "/category/smart-appliance",
-    match: ["smart gear", "watch", "projector", "vr"],
-    productIds: ["prod-6", "prod-16", "flash-4", "prod-21"],
+    match: ["watch", "projector", "vr", "camera", "power bank"],
+    productIds: ["prod-6", "prod-16", "flash-4", "prod-21", "prod-18", "prod-10", "flash-15"],
+    fillEmpty: false,
   },
   {
     name: "Feature Phone",
     slug: "feature-phone",
     href: "/category/feature-phone",
-    match: ["feature phone", "keypad", "nokia"],
-    productIds: ["prod-1", "flash-1", "flash-16", "prod-2"],
+    match: ["keypad"],
+    productIds: [],
+    fillEmpty: false,
   },
 ];
 
@@ -99,7 +108,7 @@ export function getCategoryProducts(slug: string): ProductItem[] {
   const seen = new Set(list.map((p) => p.id));
 
   const MIN_PER_PAGE = 20;
-  if (list.length < MIN_PER_PAGE) {
+  if (cat.fillEmpty !== false && list.length < MIN_PER_PAGE) {
     const filler = ALL_PRODUCTS.filter((p) => !seen.has(p.id));
     list.push(...filler.slice(0, MIN_PER_PAGE - list.length));
   }
