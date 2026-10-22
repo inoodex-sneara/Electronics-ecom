@@ -25,8 +25,8 @@ export const NAV_CATEGORIES: NavCategory[] = [
     name: "Tablet",
     slug: "tablet",
     href: "/category/tablet",
-    match: ["ipad", "tablet", "tabx"],
-    productIds: ["prod-7", "prod-19", "flash-7"],
+    match: ["ipad", "tablet", "tabx", "galaxy tab", "xiaomi pad", "lenovo tab"],
+    productIds: ["prod-7", "prod-19", "flash-7", "prod-22", "prod-23", "prod-24"],
     fillEmpty: false,
   },
   {

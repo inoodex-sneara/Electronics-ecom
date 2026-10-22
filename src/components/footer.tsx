@@ -233,12 +233,7 @@ export default function Footer() {
             </div>
 
             {/* See All Outlet */}
-            <Link
-              href="/outlets"
-              className="inline-block text-xs sm:text-sm font-semibold text-[#f97316] hover:underline pt-1"
-            >
-              See All Outlet
-            </Link>
+            
           </div>
 
           {/* Column 3: ABOUT US (2 cols on lg) */}
