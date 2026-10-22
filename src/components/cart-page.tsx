@@ -114,7 +114,7 @@ export default function CartPage() {
                     alt={item.name}
                     fill
                     sizes="112px"
-                    className="object-contain p-2"
+                    className="object-cover p-2"
                   />
                 </Link>
 

@@ -501,14 +501,14 @@ export default function NewArrivalsPage() {
                 {/* Image Area */}
                 <Link
                   href={`/products/${product.id}`}
-                  className="relative w-full aspect-[4/3] bg-zinc-50 overflow-hidden block"
+                  className="relative w-full aspect-[4/3] bg-white overflow-hidden block"
                 >
                   <Image
                     src={product.image}
                     alt={product.name}
                     fill
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    className="object-cover object-center transition-transform duration-500 ease-out group-hover:scale-108"
+                    className="object-cover object-center mix-blend-multiply transition-transform duration-500 ease-out group-hover:scale-108"
                     draggable={false}
                   />
                 </Link>

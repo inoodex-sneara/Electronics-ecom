@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -33,6 +33,35 @@ export default function Navbar() {
   const { count: wishlistCount } = useWishlist();
   const pathname = usePathname();
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const scrollbarHideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [scrollThumb, setScrollThumb] = useState({
+    visible: false,
+    top: 0,
+    height: 0,
+  });
+
+  const handleMobileMenuScroll = () => {
+    const el = mobileMenuRef.current;
+    if (!el) return;
+    const { scrollTop, scrollHeight, clientHeight } = el;
+    if (scrollHeight <= clientHeight) return;
+    const height = Math.max(28, (clientHeight / scrollHeight) * clientHeight);
+    const maxTop = clientHeight - height - 8;
+    const top = (scrollTop / (scrollHeight - clientHeight)) * maxTop;
+    setScrollThumb({ visible: true, top, height });
+    if (scrollbarHideTimer.current) clearTimeout(scrollbarHideTimer.current);
+    scrollbarHideTimer.current = setTimeout(() => {
+      setScrollThumb((prev) => ({ ...prev, visible: false }));
+    }, 900);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (scrollbarHideTimer.current) clearTimeout(scrollbarHideTimer.current);
+    };
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 w-full bg-emerald-950 text-white shadow-md">
@@ -196,7 +225,12 @@ export default function Navbar() {
       </div>
 
       {mobileMenuOpen && (
-        <div className="max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain custom-scrollbar border-t border-emerald-500/10 bg-emerald-950 px-4 pb-8 lg:hidden">
+        <div className="relative lg:hidden">
+          <div
+            ref={mobileMenuRef}
+            onScroll={handleMobileMenuScroll}
+            className="max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain custom-scrollbar border-t border-emerald-500/10 bg-emerald-950 px-4 pb-8"
+          >
           <div className="sticky top-0 z-10 bg-emerald-950 pt-3 pb-3">
             <div className="relative">
               <input
@@ -283,6 +317,16 @@ export default function Navbar() {
               </Link>
             </li>
           </ul>
+          </div>
+
+          {/* Scroll thumb — visible while scrolling, fades out after */}
+          <span
+            aria-hidden="true"
+            className={`pointer-events-none absolute right-1 w-1.5 rounded-full bg-emerald-400/90 shadow-sm shadow-emerald-500/40 transition-opacity duration-300 ${
+              scrollThumb.visible ? "opacity-100" : "opacity-0"
+            }`}
+            style={{ top: scrollThumb.top + 4, height: scrollThumb.height }}
+          />
         </div>
       )}
     </header>

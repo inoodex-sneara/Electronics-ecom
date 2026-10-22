@@ -349,7 +349,7 @@ export default function CategoryListing({ category, products }: CategoryPageProp
                     href={`/products/${p.id}`}
                     className="group flex flex-col rounded-xl border border-zinc-200/90 bg-white shadow-xs overflow-hidden transition-all hover:border-emerald-300 hover:shadow-lg hover:shadow-emerald-500/10"
                   >
-                    <div className="relative w-full aspect-[4/3] bg-zinc-50 overflow-hidden">
+                        <div className="relative w-full aspect-[4/3] bg-white overflow-hidden">
                       {disc > 0 && (
                         <OfferBadge price={p.price} originalPrice={p.originalPrice} className="top-2" />
                       )}
@@ -358,7 +358,7 @@ export default function CategoryListing({ category, products }: CategoryPageProp
                         alt={p.name}
                         fill
                         sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
-                        className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                        className="object-cover object-center mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
                       />
                     </div>
                     <div className="flex flex-1 flex-col p-2.5 sm:p-3">

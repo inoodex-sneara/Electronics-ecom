@@ -138,7 +138,7 @@ export default function QuickViewModal({
               alt={product.name}
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-contain p-5 sm:p-8 transition-transform duration-500 ease-out hover:scale-105"
+              className="object-cover p-5 sm:p-8 transition-transform duration-500 ease-out hover:scale-105"
               priority
             />
 

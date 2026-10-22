@@ -246,14 +246,14 @@ export default function FlashSaleSection() {
                 {/* Image Area */}
                 <Link
                   href={`/products/${product.id}`}
-                  className="relative w-full aspect-square bg-zinc-50 overflow-hidden p-3 sm:p-4 block"
+                  className="relative w-full aspect-square bg-white overflow-hidden p-3 sm:p-4 block"
                 >
                   <Image
                     src={product.image}
                     alt={product.name}
                     fill
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-                    className="object-cover object-center transition-transform duration-500 ease-out group-hover:scale-108"
+                    className="object-cover object-center mix-blend-multiply transition-transform duration-500 ease-out group-hover:scale-108"
                   />
                 </Link>
 

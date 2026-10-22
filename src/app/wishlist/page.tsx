@@ -88,14 +88,14 @@ export default function WishlistPage() {
                   key={item.id}
                   className="group flex flex-col rounded-2xl border border-zinc-200 bg-white shadow-xs overflow-hidden transition-all hover:border-emerald-300 hover:shadow-md"
                 >
-                  <div className="relative w-full aspect-[4/3] bg-zinc-50">
+                  <div className="relative w-full aspect-[4/3] bg-white">
                     <Link href={`/products/${item.id}`} className="block size-full">
                       <Image
                         src={item.image}
                         alt={item.name}
                         fill
                         sizes="(max-width: 640px) 100vw, 33vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="object-cover mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
                       />
                     </Link>
                     <button

@@ -932,7 +932,7 @@ export default function CheckoutPage() {
                             alt=""
                             fill
                             sizes="48px"
-                            className="object-contain p-1"
+                            className="object-cover p-1"
                           />
                         </div>
                         <div className="min-w-0 flex-1">
@@ -997,7 +997,7 @@ export default function CheckoutPage() {
                         alt=""
                         fill
                         sizes="48px"
-                        className="object-contain p-1"
+                        className="object-cover p-1"
                       />
                       <span className="absolute -top-1 -right-1 size-5 rounded-full bg-zinc-950 text-white text-[10px] font-bold flex items-center justify-center">
                         {item.qty}

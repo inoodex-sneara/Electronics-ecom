@@ -52,6 +52,17 @@ export default function ProductDetailPage({ product, related }: ProductDetailPag
   const { addItem } = useCart();
 
   const gallery = React.useMemo(() => {
+    if (product.images && product.images.length > 0) {
+      const seen = new Set<string>();
+      const imgs: string[] = [];
+      for (const img of product.images) {
+        if (!seen.has(img)) {
+          seen.add(img);
+          imgs.push(img);
+        }
+      }
+      return imgs;
+    }
     const seen = new Set<string>([product.image]);
     const images = [product.image];
     for (const rel of related) {
@@ -62,7 +73,7 @@ export default function ProductDetailPage({ product, related }: ProductDetailPag
       }
     }
     return images;
-  }, [product.image, related]);
+  }, [product, related]);
 
   const discountPct =
     product.originalPrice > product.price
@@ -138,7 +149,7 @@ export default function ProductDetailPage({ product, related }: ProductDetailPag
           {/* Image Gallery */}
           <div className="lg:col-span-4">
             <div className="bg-white rounded-2xl border border-zinc-200 p-4">
-              <div className="relative aspect-square rounded-xl bg-zinc-50 overflow-hidden">
+              <div className="relative aspect-square rounded-xl bg-white overflow-hidden">
                 {discountPct > 0 && (
                   <span className="absolute top-3 left-3 z-10 inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-2.5 py-1 text-xs font-black text-white shadow-sm">
                     <Zap className="size-3 fill-white" />-{discountPct}% OFF
@@ -167,7 +178,7 @@ export default function ProductDetailPage({ product, related }: ProductDetailPag
                   alt={product.name}
                   fill
                   sizes="(max-width: 1024px) 100vw, 33vw"
-                  className="object-contain p-6"
+                  className="object-cover p-6 mix-blend-multiply"
                   priority
                 />
               </div>
@@ -178,13 +189,13 @@ export default function ProductDetailPage({ product, related }: ProductDetailPag
                     key={`${src}-${i}`}
                     type="button"
                     onClick={() => setActiveImage(i)}
-                    className={`relative size-14 rounded-lg border bg-zinc-50 overflow-hidden shrink-0 transition-all ${
+                    className={`relative size-14 rounded-lg border bg-white overflow-hidden shrink-0 transition-all ${
                       i === activeImage
                         ? "border-emerald-500 ring-1 ring-emerald-500/30"
                         : "border-zinc-200 hover:border-zinc-400"
                     }`}
                   >
-                    <Image src={src} alt="" fill sizes="56px" className="object-contain p-1" />
+                    <Image src={src} alt="" fill sizes="56px" className="object-cover p-1 mix-blend-multiply" />
                   </button>
                 ))}
               </div>
@@ -532,7 +543,7 @@ export default function ProductDetailPage({ product, related }: ProductDetailPag
                     href={`/products/${r.id}`}
                     className="group rounded-xl border border-zinc-200 overflow-hidden hover:border-emerald-300 hover:shadow-md transition-all"
                   >
-                    <div className="relative aspect-square bg-zinc-50">
+                    <div className="relative aspect-square bg-white">
                       {rDisc > 0 && (
                         <span className="absolute top-2 left-2 z-10 rounded bg-emerald-600 px-1.5 py-0.5 text-[10px] font-black text-white">
                           -{rDisc}%
@@ -543,7 +554,7 @@ export default function ProductDetailPage({ product, related }: ProductDetailPag
                         alt={r.name}
                         fill
                         sizes="150px"
-                        className="object-contain p-3 group-hover:scale-105 transition-transform"
+                        className="object-cover p-3 mix-blend-multiply group-hover:scale-105 transition-transform"
                       />
                     </div>
                     <div className="p-2.5">
@@ -564,8 +575,8 @@ export default function ProductDetailPage({ product, related }: ProductDetailPag
       <div className="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-zinc-200 shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-2.5 flex items-center gap-3">
           <div className="hidden sm:flex items-center gap-2.5 min-w-0 flex-1">
-            <div className="relative size-11 rounded-lg border border-zinc-200 bg-zinc-50 overflow-hidden shrink-0">
-              <Image src={product.image} alt="" fill sizes="44px" className="object-contain p-0.5" />
+                  <div className="relative size-11 rounded-lg border border-zinc-200 bg-white overflow-hidden shrink-0">
+              <Image src={product.image} alt="" fill sizes="44px" className="object-cover p-0.5" />
             </div>
             <div className="min-w-0">
               <p className="text-sm font-bold text-zinc-900 truncate">{product.name}</p>

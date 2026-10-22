@@ -187,7 +187,7 @@ export default function NewCollection() {
                 {/* Product Image - Full Width of Card */}
                 <Link
                   href={`/products/${product.id}`}
-                  className="relative w-full aspect-[4/3] sm:aspect-square overflow-hidden bg-zinc-100 block"
+                    className="relative w-full aspect-[4/3] sm:aspect-square overflow-hidden bg-white block"
                 >
                   <span
                     className={`absolute top-2.5 left-2.5 z-10 inline-flex items-center px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold tracking-wide uppercase shadow-xs ${getTagBadgeClass(
@@ -220,7 +220,7 @@ export default function NewCollection() {
                     alt={product.name}
                     fill
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    className={`h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 ${
+                    className={`h-full w-full object-cover mix-blend-multiply transition-transform duration-500 ease-out group-hover:scale-105 ${
                       product.id === "prod-2"
                         ? "object-[75%_center]"
                         : product.id === "prod-4"
